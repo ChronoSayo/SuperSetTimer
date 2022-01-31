@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Timers;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -13,12 +14,22 @@ namespace SuperSetTimer
         private readonly Timer _timer;
         private readonly Stopwatch _stopWatch;
         private int _sets;
-        private bool _isCooldown, _firstSet;
+        private bool _isCooldown, _startUp, _paused;
 
         private int StartUpTime => int.Parse(StartUpEntry.Text);
         private int ActiveTime => int.Parse(ActiveEntry.Text);
         private int CooldownTime => int.Parse(CooldownEntry.Text);
         private int Sets => int.Parse(SetsEntry.Text);
+
+        private string TimerText
+        {
+            get => TimerLabel.Text;
+            set => TimerLabel.Text = value;
+        }
+        private string StatusText
+        {
+            set => StatusLabel.Text = value;
+        }
 
         public MainPage()
         {
@@ -32,50 +43,53 @@ namespace SuperSetTimer
             _timer.AutoReset = true;
 
             _isCooldown = false;
-            _firstSet = true;
+            _startUp = true;
+            _paused = false;
 
             _stopWatch = new Stopwatch();
-            TimerLabel.Text = "0.0";
+            TimerText = "0.0";
         }
 
         private void OnTimerTick(object sender, ElapsedEventArgs e)
         {
             int setTimer;
-            if (_firstSet)
+            if (_startUp)
                 setTimer = StartUpTime;
             else
                 setTimer = _isCooldown ? CooldownTime : ActiveTime;
-            TimeSpan remainingTimer = TimeSpan.FromSeconds(setTimer - _stopWatch.Elapsed.Seconds);
-
-            int showSetsLeft = Sets - _sets;
+            TimeSpan remainingTimer = TimeSpan.FromSeconds(setTimer) - _stopWatch.Elapsed;
+            
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                TimerLabel.Text = "Sets: " + showSetsLeft + "/" + SetsEntry.Text + "\n";
-                TimerLabel.Text += remainingTimer.ToString(@"m\:ss");
+                TimerText = "Sets: " + _sets + "/" + Sets + "\n";
+                TimerText += remainingTimer.ToString(@"m\:ss\.ff");
             });
 
-            if (remainingTimer.Seconds < 0)
-            {
-                if (_firstSet)
-                    _firstSet = false;
-
-                _isCooldown = !_isCooldown;
-                if (!_isCooldown)
-                {
-                    _sets--;
-                    StatusLabel.Text = "GO!";
-                }
-                else
-                    StatusLabel.Text = "Cooldown";
-
-                _stopWatch.Restart();
-            }
-
-            if (_sets >= 0) 
+            if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0)
                 return;
 
-            _timer.Stop();
-            EnableEntries(true);
+            if (_startUp)
+                _startUp = false;
+
+            _isCooldown = !_isCooldown;
+
+            if (!_isCooldown)
+            {
+                _sets++; 
+                StatusText = "GO!";
+            }
+            else
+            {
+                if (_sets == Sets)
+                {
+                    StatusText = "DONE!";
+                    Reset();
+                    Reset();
+                    return;
+                }
+                StatusText = "Rest";
+            }
+
             _stopWatch.Restart();
         }
 
@@ -84,10 +98,15 @@ namespace SuperSetTimer
             _stopWatch.Start();
             _timer.Enabled = true;
             _timer.Start();
-            _isCooldown = true;
-            _sets = Sets;
-            _firstSet = true;
-            StatusLabel.Text = "Get ready!";
+            if (!_paused)
+            {
+                _isCooldown = true;
+                _startUp = true;
+                _sets = 0;
+                StatusText = "Get ready!";
+            }
+            else
+                _paused = false;
 
             EnableEntries(false);
 
@@ -97,18 +116,13 @@ namespace SuperSetTimer
             _stopWatch.Stop();
             _timer.Enabled = false;
             _timer.Stop();
-            StatusLabel.Text = "Paused";
+            StatusText = "Paused";
+            _paused = true;
         }
         private void OnTimerReset(object sender, EventArgs e)
         {
-            _stopWatch.Stop();
-            _stopWatch.Reset();
-            _timer.Enabled = false;
-            _timer.Stop();
-            _firstSet = true;
-            StatusLabel.Text = "Starting over.";
-
-            EnableEntries(true);
+            StatusText = "Starting over.";
+            Reset();
         }
 
         private void EnableEntries(bool enable)
@@ -116,6 +130,20 @@ namespace SuperSetTimer
             CooldownEntry.IsEnabled = enable;
             ActiveEntry.IsEnabled = enable;
             SetsEntry.IsEnabled = enable;
+            StartUpEntry.IsEnabled = enable;
+        }
+
+        private void Reset()
+        {
+            _stopWatch.Stop();
+            _stopWatch.Reset();
+
+            _timer.Enabled = false;
+            _timer.Stop();
+
+            _startUp = true;
+            TimerText = "0.0";
+            EnableEntries(true);
         }
     }
 }
