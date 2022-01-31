@@ -21,23 +21,26 @@
                 <Button Text="Stop" Clicked="OnTimerStop" />
                 <Button Grid.Row="0" Grid.Column="1" Text="Reset" Clicked="OnTimerReset" />
             </Grid>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Label HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Workout time:"/>
-                <Entry Grid.Row="0" HorizontalTextAlignment="Start" Grid.Column="1" x:Name="ActiveEntry" Text="6" Keyboard="Numeric"/>
-                <Label Grid.Row="1" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Cooldown:"/>
-                <Entry Grid.Row="1" HorizontalTextAlignment="Start" Grid.Column="1" x:Name="CooldownEntry" Text="1" Keyboard="Numeric"/>
-                <Label Grid.Row="2" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sets:"/>
-                <Entry Grid.Row="2" HorizontalTextAlignment="Start" Grid.Column="1" x:Name="SetsEntry" Text="3" Keyboard="Numeric"/>
-            </Grid>
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Workout time:"/>
+            <Entry Grid.Row="0" HorizontalTextAlignment="Start" Grid.Column="1" x:Name="ActiveEntry" Text="6" Keyboard="Numeric"/>
+            <Label Grid.Row="1" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Cooldown:"/>
+            <Entry Grid.Row="1" HorizontalTextAlignment="Start" Grid.Column="1" x:Name="CooldownEntry" Text="1" Keyboard="Numeric"/>
+            <Label Grid.Row="2" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sets:"/>
+            <Entry Grid.Row="2" HorizontalTextAlignment="Start" Grid.Column="1" x:Name="SetsEntry" Text="3" Keyboard="Numeric"/>
+            <Label Grid.Row="3" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sets:"/>
+            <Entry Grid.Row="3" HorizontalTextAlignment="Start" Grid.Column="1" x:Name="StartUpEntry" Text="10" Keyboard="Numeric"/>
+          </Grid>
         </StackLayout>
     </StackLayout>
 

@@ -15,6 +15,9 @@ namespace SuperSetTimer
         private int _sets;
         private bool _isCooldown, _firstSet;
 
+        private int StartUpTime => int.Parse(StartUpEntry.Text);
+        private int ActiveTime => int.Parse(ActiveEntry.Text);
+        private int CooldownTime => int.Parse(CooldownEntry.Text);
         private int Sets => int.Parse(SetsEntry.Text);
 
         public MainPage()
@@ -39,9 +42,9 @@ namespace SuperSetTimer
         {
             int setTimer;
             if (_firstSet)
-                setTimer = 2;
+                setTimer = StartUpTime;
             else
-                setTimer = _isCooldown ? int.Parse(CooldownEntry.Text) : int.Parse(ActiveEntry.Text);
+                setTimer = _isCooldown ? CooldownTime : ActiveTime;
             TimeSpan remainingTimer = TimeSpan.FromSeconds(setTimer - _stopWatch.Elapsed.Seconds);
 
             int showSetsLeft = Sets - _sets;
@@ -82,7 +85,7 @@ namespace SuperSetTimer
             _timer.Enabled = true;
             _timer.Start();
             _isCooldown = true;
-            _sets = int.Parse(SetsEntry.Text);
+            _sets = Sets;
             _firstSet = true;
             StatusLabel.Text = "Get ready!";
 
