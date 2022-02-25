@@ -68,10 +68,14 @@ namespace SuperSetTimer
             if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0)
                 return;
 
-            if (_startUp)
-                _startUp = false;
-
             _isCooldown = !_isCooldown;
+
+            if (_startUp)
+            {
+                _startUp = false;
+                _stopWatch.Restart();
+                return;
+            }
 
             if (!_isCooldown)
             {
