@@ -38,7 +38,7 @@ namespace SuperSetTimer
 
             _timer = new Timer();
             _timer.Elapsed += OnTimerTick;
-            _timer.Interval = 1;
+            _timer.Interval = 10;
             _timer.Enabled = false;
             _timer.AutoReset = true;
 
@@ -80,10 +80,10 @@ namespace SuperSetTimer
             }
             else
             {
-                if (_sets == Sets)
+                if (_sets > Sets)
                 {
                     StatusText = "DONE!";
-                    Reset();
+                    EnableEntries(true);
                     Reset();
                     return;
                 }
