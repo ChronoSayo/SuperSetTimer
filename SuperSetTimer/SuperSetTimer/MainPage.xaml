@@ -4,12 +4,17 @@
              x:Class="SuperSetTimer.MainPage">
 
     <StackLayout>
-        <Label HorizontalOptions="Center" x:Name="StatusLabel" Text="Status" FontSize="Large"/>
-        <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
+        <Frame BackgroundColor="AliceBlue" Padding="24" CornerRadius="0" x:Name="StatusFrame">
+            <Label HorizontalOptions="Center" x:Name="StatusLabel" Text="Status" FontSize="70"/>
+        </Frame>
+        <Frame BackgroundColor="DarkGoldenrod" Padding="24" CornerRadius="0">
+            <Label x:Name="SetLabel" Text="5/5" HorizontalTextAlignment="Center" TextColor="White" FontSize="30"/>
+        </Frame>
+        <Frame BackgroundColor="Black" Padding="24" CornerRadius="0">
             <Label x:Name="TimerLabel" HorizontalTextAlignment="Center" TextColor="White" FontSize="70"/>
         </Frame>
         <StackLayout>
-            <Button HorizontalOptions="FillAndExpand" Text="Start" Clicked="OnTimerStart" HeightRequest="150"/>
+            <Button HorizontalOptions="FillAndExpand" Text="Start" Clicked="OnTimerStart" HeightRequest="90"/>
             <Grid HeightRequest="100">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -18,7 +23,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button Text="Pause" Clicked="OnTimerStop" />
+                <Button Text="Pause" Clicked="OnTimerStop"/>
                 <Button Grid.Row="0" Grid.Column="1" Text="Reset" Clicked="OnTimerReset" />
             </Grid>
           <Grid>
