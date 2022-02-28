@@ -11,8 +11,9 @@
             <Label x:Name="SetLabel" Text="5/5" HorizontalTextAlignment="Center" TextColor="White" FontSize="30"/>
         </Frame>
         <Frame BackgroundColor="Black" Padding="24" CornerRadius="0">
-            <Label x:Name="TimerLabel" HorizontalTextAlignment="Center" TextColor="White" FontSize="70"/>
+            <Label x:Name="TimerLabel" Text="0.0" HorizontalTextAlignment="Center" TextColor="White" FontSize="70"/>
         </Frame>
+        <ProgressBar x:Name="ProgressBar" Progress="0" ProgressColor="Orange" />
         <StackLayout>
             <Button HorizontalOptions="FillAndExpand" Text="Start" Clicked="OnTimerStart" HeightRequest="90"/>
             <Grid HeightRequest="100">

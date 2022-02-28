@@ -14,6 +14,8 @@ namespace SuperSetTimer
         private Countdown _countdown;
         public MainPage()
         {
+            InitializeComponent();
+
             _countdown = new Countdown
             {
                 StartUpEntry = StartUpEntry,
@@ -21,7 +23,9 @@ namespace SuperSetTimer
                 CooldownEntry = CooldownEntry,
                 SetsEntry = SetsEntry,
                 StatusLabel = StatusLabel,
-                TimerLabel = TimerLabel
+                TimerLabel = TimerLabel,
+                StatusFrame = StatusFrame,
+                ProgressBar = ProgressBar
             };
         }
 
