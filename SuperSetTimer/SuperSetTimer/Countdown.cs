@@ -13,6 +13,7 @@ namespace SuperSetTimer
         private readonly Stopwatch _stopWatch;
         private int _setsDone;
         private bool _isCooldown, _startUp, _paused;
+        private State _state;
 
         private enum State
         {
@@ -28,6 +29,8 @@ namespace SuperSetTimer
         public Label SetLabel { get; set; }
         public Frame StatusFrame { get; set; }
         public ProgressBar ProgressBar { get; set; }
+        public Button ActionButton { get; set; }
+        public Button ResetButton { get; set; }
 
         private int StartUpTime => int.Parse(StartUpEntry.Text);
         private int ActiveTime => int.Parse(ActiveEntry.Text);
@@ -108,21 +111,25 @@ namespace SuperSetTimer
             });
         }
 
-        public void Start()
+        public void Action()
         {
-            _stopWatch.Start();
-            _timer.Enabled = true;
-            _timer.Start();
-            if (!_paused)
+            if (_state == State.StandBy)
             {
+                _stopWatch.Start();
+                _timer.Enabled = true;
+                _timer.Start();
                 _isCooldown = true;
                 _startUp = true;
                 _setsDone = 0;
                 ProgressBar.Progress = 0;
                 SetVisualsByState(State.StartUp);
             }
-            else
-                _paused = false;
+            else if (_state == State.Active)
+            {
+                _stopWatch.Stop();
+                _timer.Stop();
+                ProgressBar.AbortAnimation()
+            }
 
             EnableEntries(false);
 
@@ -151,6 +158,7 @@ namespace SuperSetTimer
 
         private async void SetVisualsByState(State state)
         {
+            _state = state;
             ProgressBar.Progress = 0;
             Color bgColor = Color.AliceBlue;
             string statusText;

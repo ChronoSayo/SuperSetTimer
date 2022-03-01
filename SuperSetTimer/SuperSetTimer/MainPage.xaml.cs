@@ -20,18 +20,15 @@ namespace SuperSetTimer
                 TimerLabel = TimerLabel,
                 StatusFrame = StatusFrame,
                 ProgressBar = ProgressBar,
-                SetLabel = SetLabel
+                SetLabel = SetLabel,
+                ActionButton = ActionButton,
+                ResetButton = ResetButton
             };
         }
 
-        private void OnTimerStart(object sender, EventArgs e)
+        private void OnTimerAction(object sender, EventArgs e)
         {
-            _countdown.Start();
-        }
-
-        private void OnTimerStop(object sender, EventArgs e)
-        {
-            _countdown.Stop();
+            _countdown.Action();
         }
 
         private void OnTimerReset(object sender, EventArgs e)
