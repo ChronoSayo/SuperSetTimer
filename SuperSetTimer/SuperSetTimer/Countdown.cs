@@ -76,7 +76,8 @@ namespace SuperSetTimer
             TimerText = "Sets: " + _setsDone + "/" + Sets + "\n";
             TimerText += remainingTimer.ToString(@"m\:ss\.ff");
 
-            if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0) return;
+            if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0) 
+                return;
 
             _isCooldown = !_isCooldown;
 
@@ -99,13 +100,11 @@ namespace SuperSetTimer
 
                 SetVisualsByState(State.Cooldown);
             }
-
-            await ProgressBar.ProgressTo(1, (uint)setTimer * 1000, Easing.Linear);
-
+            
             _stopWatch.Restart();
         }
 
-        public void Start()
+        public async void Start()
         {
             _stopWatch.Start();
             _timer.Enabled = true;
@@ -146,33 +145,44 @@ namespace SuperSetTimer
             StartUpEntry.IsEnabled = enable;
         }
 
-        private void SetVisualsByState(State state)
+        private async void SetVisualsByState(State state)
         {
+            ProgressBar.Progress = 0;
+            Color bgColor = Color.AliceBlue;
+            string statusText = "";
             switch (state)
             {
                 case State.StandBy:
-                    StatusText = "DONE";
-                    StatusFrame.BackgroundColor = Color.AliceBlue;
+                    statusText = "DONE";
                     break;
                 case State.StartUp:
-                    StatusText = "Get ready!";
-                    StatusFrame.BackgroundColor = Color.CadetBlue;
+                    statusText = "Get ready!";
+                    bgColor = Color.CadetBlue;
                     break;
                 case State.Active:
-                    StatusText = "GO!";
-                    StatusFrame.BackgroundColor = Color.Red;
+                    statusText = "GO!";
+                    bgColor = Color.Green;
                     break;
                 case State.Cooldown:
-                    StatusText = "Rest";
-                    StatusFrame.BackgroundColor = Color.Yellow;
+                    statusText = "Rest";
+                    bgColor = Color.Yellow;
                     break;
                 case State.Paused:
-                    StatusText = "Paused";
-                    StatusFrame.BackgroundColor = Color.AliceBlue;
+                    statusText = "Paused";
+                    bgColor = Color.Red;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+
+            StatusText = statusText;
+            StatusFrame.BackgroundColor = bgColor;
+            await ShowProgressBar(StartUpTime);
+        }
+
+        private async void ShowProgressBar(int time)
+        {
+            await ProgressBar.ProgressTo(1, (uint)time * 1000, Easing.Linear);
         }
 
         private void Reset()
