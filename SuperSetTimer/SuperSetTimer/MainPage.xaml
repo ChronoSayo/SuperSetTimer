@@ -1,22 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:system="clr-namespace:System;assembly=netstandard"
              x:Class="SuperSetTimer.MainPage">
 
     <StackLayout>
         <Frame BackgroundColor="AliceBlue" Padding="24" CornerRadius="0" x:Name="StatusFrame">
             <Label HorizontalOptions="Center" x:Name="StatusLabel" Text="Status" FontSize="70"/>
         </Frame>
-        <Frame BackgroundColor="DarkGoldenrod" Padding="24" CornerRadius="0">
-            <Label x:Name="SetLabel" Text="5/5" HorizontalTextAlignment="Center" TextColor="White" FontSize="30"/>
+        <Frame BackgroundColor="DarkGoldenrod" Padding="24" CornerRadius="0" x:Name="SetFrame" >
+            <Label x:Name="SetLabel" Text="-/-" HorizontalTextAlignment="Center" TextColor="White" FontSize="30" />
         </Frame>
         <Frame BackgroundColor="Black" Padding="24" CornerRadius="0">
             <Label x:Name="TimerLabel" Text="0.0" HorizontalTextAlignment="Center" TextColor="White" FontSize="70"/>
         </Frame>
-        <ProgressBar x:Name="ProgressBar" Progress="0" ProgressColor="Orange" />
         <StackLayout>
+            <ProgressBar x:Name="ProgressBar" Progress="0" ProgressColor="Orange" ScaleY="4"/>
+        </StackLayout>
+            <StackLayout>
             <Button HorizontalOptions="FillAndExpand" Text="Start" Clicked="OnTimerStart" HeightRequest="90"/>
-            <Grid HeightRequest="100">
+            <Grid HeightRequest="60">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>

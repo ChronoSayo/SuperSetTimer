@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Timers;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SuperSetTimer
@@ -25,7 +19,8 @@ namespace SuperSetTimer
                 StatusLabel = StatusLabel,
                 TimerLabel = TimerLabel,
                 StatusFrame = StatusFrame,
-                ProgressBar = ProgressBar
+                ProgressBar = ProgressBar,
+                SetLabel = SetLabel
             };
         }
 

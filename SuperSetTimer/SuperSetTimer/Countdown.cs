@@ -25,6 +25,7 @@ namespace SuperSetTimer
         public Entry SetsEntry { get; set; }
         public Label TimerLabel { get; set; }
         public Label StatusLabel { get; set; }
+        public Label SetLabel { get; set; }
         public Frame StatusFrame { get; set; }
         public ProgressBar ProgressBar { get; set; }
 
@@ -41,6 +42,10 @@ namespace SuperSetTimer
         private string StatusText
         {
             set => StatusLabel.Text = value;
+        }
+        private string SetText
+        {
+            set => SetLabel.Text = value;
         }
 
         public Countdown()
@@ -61,50 +66,49 @@ namespace SuperSetTimer
         private void OnTimerTick(object sender, ElapsedEventArgs e)
         {
             ProgressBar.Progress = 0;
-            MainThread.BeginInvokeOnMainThread(DoCountdown);
-        }
-
-        private async void DoCountdown()
-        {
-            int setTimer;
-            if (_startUp)
-                setTimer = StartUpTime;
-            else
-                setTimer = _isCooldown ? CooldownTime : ActiveTime;
-            TimeSpan remainingTimer = TimeSpan.FromSeconds(setTimer) - _stopWatch.Elapsed;
-
-            TimerText = "Sets: " + _setsDone + "/" + Sets + "\n";
-            TimerText += remainingTimer.ToString(@"m\:ss\.ff");
-
-            if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0) 
-                return;
-
-            _isCooldown = !_isCooldown;
-
-            if (_startUp) _startUp = false;
-
-            if (!_isCooldown)
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                _setsDone++;
-                SetVisualsByState(State.Active);
-            }
-            else
-            {
-                if (_setsDone >= Sets)
-                {
-                    SetVisualsByState(State.StandBy);
-                    EnableEntries(true);
-                    Reset();
+                int setTimer;
+                if (_startUp)
+                    setTimer = StartUpTime;
+                else
+                    setTimer = _isCooldown ? CooldownTime : ActiveTime;
+                TimeSpan remainingTimer = TimeSpan.FromSeconds(setTimer) - _stopWatch.Elapsed;
+                
+                TimerText = remainingTimer.ToString(@"m\:ss\.ff");
+
+                if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0)
                     return;
+
+                _isCooldown = !_isCooldown;
+
+                if (_startUp) 
+                    _startUp = false;
+
+                if (!_isCooldown)
+                {
+                    _setsDone++;
+                    SetText = "Sets: " + _setsDone + "/" + Sets;
+                    SetVisualsByState(State.Active);
+                }
+                else
+                {
+                    if (_setsDone >= Sets)
+                    {
+                        SetVisualsByState(State.StandBy);
+                        EnableEntries(true);
+                        Reset();
+                        return;
+                    }
+
+                    SetVisualsByState(State.Cooldown);
                 }
 
-                SetVisualsByState(State.Cooldown);
-            }
-            
-            _stopWatch.Restart();
+                _stopWatch.Restart();
+            });
         }
 
-        public async void Start()
+        public void Start()
         {
             _stopWatch.Start();
             _timer.Enabled = true;
@@ -149,7 +153,8 @@ namespace SuperSetTimer
         {
             ProgressBar.Progress = 0;
             Color bgColor = Color.AliceBlue;
-            string statusText = "";
+            string statusText;
+            int time = 0;
             switch (state)
             {
                 case State.StandBy:
@@ -158,14 +163,17 @@ namespace SuperSetTimer
                 case State.StartUp:
                     statusText = "Get ready!";
                     bgColor = Color.CadetBlue;
+                    time = StartUpTime;
                     break;
                 case State.Active:
                     statusText = "GO!";
                     bgColor = Color.Green;
+                    time = ActiveTime;
                     break;
                 case State.Cooldown:
                     statusText = "Rest";
                     bgColor = Color.Yellow;
+                    time = CooldownTime;
                     break;
                 case State.Paused:
                     statusText = "Paused";
@@ -177,12 +185,14 @@ namespace SuperSetTimer
 
             StatusText = statusText;
             StatusFrame.BackgroundColor = bgColor;
-            await ShowProgressBar(StartUpTime);
+            
+            await ShowProgressBar((uint)time);
         }
 
-        private async void ShowProgressBar(int time)
+        private async Task ShowProgressBar(uint time)
         {
-            await ProgressBar.ProgressTo(1, (uint)time * 1000, Easing.Linear);
+            ProgressBar.Progress = 0;
+            await ProgressBar.ProgressTo(1, time * 1000, Easing.Linear);
         }
 
         private void Reset()
