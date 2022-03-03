@@ -19,7 +19,7 @@
         </StackLayout>
             <StackLayout>
             <Button x:Name="ActionButton" HorizontalOptions="FillAndExpand" Text="Start" Clicked="OnTimerAction" HeightRequest="90"/>
-            <Button x:Name="ResetButton" IsEnabled="False" HorizontalOptions="FillAndExpand" Text="Pause" Clicked="OnTimerReset" HeightRequest="40"/>
+            <Button x:Name="ResetButton" IsEnabled="False" HorizontalOptions="FillAndExpand" Text="Reset" Clicked="OnTimerReset" HeightRequest="40"/>
             <Grid>
             <Grid.RowDefinitions>
               <RowDefinition Height="*" />

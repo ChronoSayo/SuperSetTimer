@@ -12,8 +12,10 @@ namespace SuperSetTimer
         private readonly Timer _timer;
         private readonly Stopwatch _stopWatch;
         private int _setsDone;
-        private bool _isCooldown, _startUp, _paused;
+        private double _progress;
+        private bool _isCooldown, _startUp;
         private State _state;
+        private Animation _progressAnimation;
 
         private enum State
         {
@@ -32,9 +34,9 @@ namespace SuperSetTimer
         public Button ActionButton { get; set; }
         public Button ResetButton { get; set; }
 
-        private int StartUpTime => int.Parse(StartUpEntry.Text);
-        private int ActiveTime => int.Parse(ActiveEntry.Text);
-        private int CooldownTime => int.Parse(CooldownEntry.Text);
+        private uint StartUpTime => uint.Parse(StartUpEntry.Text);
+        private uint ActiveTime => uint.Parse(ActiveEntry.Text);
+        private uint CooldownTime => uint.Parse(CooldownEntry.Text);
         private int Sets => int.Parse(SetsEntry.Text);
 
         private string TimerText
@@ -61,17 +63,18 @@ namespace SuperSetTimer
 
             _isCooldown = false;
             _startUp = true;
-            _paused = false;
+
+            _progress = 0;
+            _state = State.StandBy;
 
             _stopWatch = new Stopwatch();
         }
 
         private void OnTimerTick(object sender, ElapsedEventArgs e)
         {
-            ProgressBar.Progress = 0;
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                int setTimer;
+                uint setTimer;
                 if (_startUp)
                     setTimer = StartUpTime;
                 else
@@ -80,11 +83,13 @@ namespace SuperSetTimer
                 
                 TimerText = remainingTimer.ToString(@"m\:ss\.ff");
 
+                ProgressBar.Progress += 1 / remainingTimer.TotalSeconds;
+
                 if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0)
                     return;
 
                 _isCooldown = !_isCooldown;
-
+                
                 if (_startUp) 
                     _startUp = false;
 
@@ -113,34 +118,38 @@ namespace SuperSetTimer
 
         public void Action()
         {
-            if (_state == State.StandBy)
+            switch (_state)
             {
-                _stopWatch.Start();
-                _timer.Enabled = true;
-                _timer.Start();
-                _isCooldown = true;
-                _startUp = true;
-                _setsDone = 0;
-                ProgressBar.Progress = 0;
-                SetVisualsByState(State.StartUp);
-            }
-            else if (_state == State.Active)
-            {
-                _stopWatch.Stop();
-                _timer.Stop();
-                ProgressBar.AbortAnimation()
+                case State.StandBy:
+                    _stopWatch.Start();
+                    _timer.Enabled = true;
+                    _timer.Start();
+                    _isCooldown = true;
+                    _startUp = true;
+                    _setsDone = 0;
+                    if (_progress >= 1)
+                        _progress = 0;
+                    SetVisualsByState(State.StartUp);
+                    ResetButton.IsEnabled = false;
+                    break;
+                case State.Cooldown:
+                case State.StartUp:
+                case State.Active:
+                    _stopWatch.Stop();
+                    _timer.Stop();
+                    SetVisualsByState(State.Paused);
+                    ResetButton.IsEnabled = true;
+                    break;
+                case State.Paused:
+                    _stopWatch.Start();
+                    _timer.Start();
+                    ResetButton.IsEnabled = false;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             EnableEntries(false);
-
-        }
-        public void Stop()
-        {
-            _stopWatch.Stop();
-            _timer.Enabled = false;
-            _timer.Stop();
-            _paused = true;
-            SetVisualsByState(State.Paused);
         }
         public void TimerReset()
         {
@@ -156,13 +165,13 @@ namespace SuperSetTimer
             StartUpEntry.IsEnabled = enable;
         }
 
-        private async void SetVisualsByState(State state)
+        private void SetVisualsByState(State state)
         {
             _state = state;
             ProgressBar.Progress = 0;
             Color bgColor = Color.AliceBlue;
             string statusText;
-            int time = 0;
+            uint time = 0;
             switch (state)
             {
                 case State.StandBy:
@@ -193,14 +202,6 @@ namespace SuperSetTimer
 
             StatusText = statusText;
             StatusFrame.BackgroundColor = bgColor;
-            
-            await ShowProgressBar((uint)time);
-        }
-
-        private async Task ShowProgressBar(uint time)
-        {
-            ProgressBar.Progress = 0;
-            await ProgressBar.ProgressTo(1, time * 1000, Easing.Linear);
         }
 
         private void Reset()
