@@ -12,7 +12,7 @@ namespace SuperSetTimer
         private readonly Timer _timer;
         private readonly Stopwatch _stopWatch;
         private int _setsDone;
-        private double _progress;
+        private double _progress, _progressSpeed;
         private bool _isCooldown, _startUp;
         private State _state;
         private Animation _progressAnimation;
@@ -83,9 +83,10 @@ namespace SuperSetTimer
                 
                 TimerText = remainingTimer.ToString(@"m\:ss\.ff");
 
-                ProgressBar.Progress += 1 / remainingTimer.TotalSeconds;
+                ProgressBar.Progress += _progressSpeed;
 
-                if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0)
+                //if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0)
+                if(remainingTimer.TotalMilliseconds > 0)
                     return;
 
                 _isCooldown = !_isCooldown;
@@ -202,6 +203,8 @@ namespace SuperSetTimer
 
             StatusText = statusText;
             StatusFrame.BackgroundColor = bgColor;
+            _progressSpeed = 1.0  / (time * 1000);
+            ProgressBar.Progress += _progressSpeed;
         }
 
         private void Reset()
