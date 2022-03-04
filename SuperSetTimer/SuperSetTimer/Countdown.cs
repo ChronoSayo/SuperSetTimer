@@ -14,7 +14,7 @@ namespace SuperSetTimer
         private int _setsDone;
         private double _progressSpeed;
         private bool _isCooldown, _startUp;
-        private State _state, _previousState;
+        private State _state, _fromCountingState;
 
         private enum State
         {
@@ -65,8 +65,9 @@ namespace SuperSetTimer
 
             _isCooldown = false;
             _startUp = true;
-            
-            _state = _previousState = State.StandBy;
+
+            _fromCountingState = State.Active;
+            _state = State.StandBy;
 
             _stopWatch = new Stopwatch();
         }
@@ -88,6 +89,8 @@ namespace SuperSetTimer
                 
                 if(remainingTimer.TotalMilliseconds > 0)
                     return;
+                
+                ProgressBar.Progress = 0;
 
                 _isCooldown = !_isCooldown;
                 
@@ -136,6 +139,7 @@ namespace SuperSetTimer
                 case State.Active:
                     _stopWatch.Stop();
                     _timer.Stop();
+                    _fromCountingState = _state;
                     SetVisualsByState(State.Paused);
                     ResetButton.IsEnabled = true;
                     break;
@@ -143,13 +147,12 @@ namespace SuperSetTimer
                     _stopWatch.Start();
                     _timer.Start();
                     ResetButton.IsEnabled = false;
-                    SetVisualsByState(_previousState);
+                    SetVisualsByState(_fromCountingState);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
             
-            _previousState = _state;
             EnableEntries(false);
         }
         public void TimerReset()
@@ -168,37 +171,36 @@ namespace SuperSetTimer
         private void SetVisualsByState(State state)
         {
             _state = state;
-            ProgressBar.Progress = 0;
             Color bgColor = Color.AliceBlue;
             string statusText;
-            uint time = 0;
             switch (state)
             {
                 case State.StandBy:
                     statusText = "DONE";
                     ActionButtonText = "START";
+                    _fromCountingState = State.Active;
                     break;
                 case State.StartUp:
                     statusText = "Get ready!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.CadetBlue;
-                    time = StartUpTime;
+                    SetProgress(StartUpTime);
                     break;
                 case State.Active:
                     statusText = "GO!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.Green;
-                    time = ActiveTime;
+                    SetProgress(ActiveTime);
                     break;
                 case State.Cooldown:
                     statusText = "Rest";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.Yellow;
-                    time = CooldownTime;
+                    SetProgress(CooldownTime);
                     break;
                 case State.Paused:
                     statusText = "Paused";
-                    ActionButtonText = "UNPAUSE";
+                    ActionButtonText = "RESUME";
                     bgColor = Color.Red;
                     break;
                 default:
@@ -207,8 +209,14 @@ namespace SuperSetTimer
 
             StatusText = statusText;
             StatusFrame.BackgroundColor = bgColor;
+        }
+
+        private void SetProgress(uint time)
+        {
+            if(_fromCountingState == State.StandBy)
+                return;
+
             _progressSpeed = 1.075 / (time * 1000);
-            ProgressBar.Progress += _progressSpeed;
         }
 
         private void Reset()
@@ -221,6 +229,11 @@ namespace SuperSetTimer
 
             _startUp = true;
             TimerText = "0.0";
+            _setsDone = 0;
+            ProgressBar.Progress = 0;
+            StatusText = "-";
+            SetText = "Sets: -/-";
+
             SetVisualsByState(State.StandBy);
             EnableEntries(true);
         }
