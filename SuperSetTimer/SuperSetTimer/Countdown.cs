@@ -12,10 +12,9 @@ namespace SuperSetTimer
         private readonly Timer _timer;
         private readonly Stopwatch _stopWatch;
         private int _setsDone;
-        private double _progress, _progressSpeed;
+        private double _progressSpeed;
         private bool _isCooldown, _startUp;
-        private State _state;
-        private Animation _progressAnimation;
+        private State _state, _previousState;
 
         private enum State
         {
@@ -41,7 +40,6 @@ namespace SuperSetTimer
 
         private string TimerText
         {
-            get => TimerLabel.Text;
             set => TimerLabel.Text = value;
         }
         private string StatusText
@@ -51,6 +49,10 @@ namespace SuperSetTimer
         private string SetText
         {
             set => SetLabel.Text = value;
+        }
+        private string ActionButtonText
+        {
+            set => ActionButton.Text = value;
         }
 
         public Countdown()
@@ -63,9 +65,8 @@ namespace SuperSetTimer
 
             _isCooldown = false;
             _startUp = true;
-
-            _progress = 0;
-            _state = State.StandBy;
+            
+            _state = _previousState = State.StandBy;
 
             _stopWatch = new Stopwatch();
         }
@@ -84,8 +85,7 @@ namespace SuperSetTimer
                 TimerText = remainingTimer.ToString(@"m\:ss\.ff");
 
                 ProgressBar.Progress += _progressSpeed;
-
-                //if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0)
+                
                 if(remainingTimer.TotalMilliseconds > 0)
                     return;
 
@@ -128,8 +128,6 @@ namespace SuperSetTimer
                     _isCooldown = true;
                     _startUp = true;
                     _setsDone = 0;
-                    if (_progress >= 1)
-                        _progress = 0;
                     SetVisualsByState(State.StartUp);
                     ResetButton.IsEnabled = false;
                     break;
@@ -145,16 +143,17 @@ namespace SuperSetTimer
                     _stopWatch.Start();
                     _timer.Start();
                     ResetButton.IsEnabled = false;
+                    SetVisualsByState(_previousState);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
+            
+            _previousState = _state;
             EnableEntries(false);
         }
         public void TimerReset()
         {
-            SetVisualsByState(State.StandBy);
             Reset();
         }
 
@@ -177,24 +176,29 @@ namespace SuperSetTimer
             {
                 case State.StandBy:
                     statusText = "DONE";
+                    ActionButtonText = "START";
                     break;
                 case State.StartUp:
                     statusText = "Get ready!";
+                    ActionButtonText = "PAUSE";
                     bgColor = Color.CadetBlue;
                     time = StartUpTime;
                     break;
                 case State.Active:
                     statusText = "GO!";
+                    ActionButtonText = "PAUSE";
                     bgColor = Color.Green;
                     time = ActiveTime;
                     break;
                 case State.Cooldown:
                     statusText = "Rest";
+                    ActionButtonText = "PAUSE";
                     bgColor = Color.Yellow;
                     time = CooldownTime;
                     break;
                 case State.Paused:
                     statusText = "Paused";
+                    ActionButtonText = "UNPAUSE";
                     bgColor = Color.Red;
                     break;
                 default:
@@ -203,7 +207,7 @@ namespace SuperSetTimer
 
             StatusText = statusText;
             StatusFrame.BackgroundColor = bgColor;
-            _progressSpeed = 1.0  / (time * 1000);
+            _progressSpeed = 1.075 / (time * 1000);
             ProgressBar.Progress += _progressSpeed;
         }
 
@@ -217,6 +221,7 @@ namespace SuperSetTimer
 
             _startUp = true;
             TimerText = "0.0";
+            SetVisualsByState(State.StandBy);
             EnableEntries(true);
         }
     }
