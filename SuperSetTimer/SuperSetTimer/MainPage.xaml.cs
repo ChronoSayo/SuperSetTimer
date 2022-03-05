@@ -10,6 +10,7 @@ namespace SuperSetTimer
         {
             InitializeComponent();
 
+            Audio.Load();
             _countdown = new Countdown
             {
                 StartUpEntry = StartUpEntry,
