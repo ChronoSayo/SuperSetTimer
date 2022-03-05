@@ -86,6 +86,8 @@ namespace SuperSetTimer
                 TimerText = remainingTimer.ToString(@"m\:ss\.ff");
 
                 ProgressBar.Progress += _progressSpeed;
+
+                Audio.PlayCountdown((int)remainingTimer.TotalSeconds);
                 
                 if(remainingTimer.TotalMilliseconds > 0)
                     return;
@@ -138,7 +140,6 @@ namespace SuperSetTimer
                 case State.Cooldown:
                 case State.StartUp:
                 case State.Active:
-
                     _stopWatch.Stop();
                     _timer.Stop();
                     _fromCountingState = _state;
