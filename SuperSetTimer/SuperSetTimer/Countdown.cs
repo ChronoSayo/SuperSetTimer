@@ -31,6 +31,7 @@ namespace SuperSetTimer
         public ProgressBar ProgressBar { get; set; }
         public Button ActionButton { get; set; }
         public Button ResetButton { get; set; }
+        public Audio Audio { get; set; }
 
         private uint StartUpTime => uint.Parse(StartUpEntry.Text);
         private uint ActiveTime => uint.Parse(ActiveEntry.Text);
@@ -137,6 +138,7 @@ namespace SuperSetTimer
                 case State.Cooldown:
                 case State.StartUp:
                 case State.Active:
+
                     _stopWatch.Stop();
                     _timer.Stop();
                     _fromCountingState = _state;

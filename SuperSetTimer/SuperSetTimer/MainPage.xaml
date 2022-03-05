@@ -31,18 +31,20 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Label HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Workout time:"/>
-                <Entry Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" x:Name="ActiveEntry" Text="5" Keyboard="Numeric"/>
+                <Entry Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="ActiveEntry" Text="5" Keyboard="Numeric"/>
                 <Label Grid.Row="1" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Cooldown:"/>
-                <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" x:Name="CooldownEntry" Text="2" Keyboard="Numeric"/>
+                <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="CooldownEntry" Text="2" Keyboard="Numeric"/>
                 <Label Grid.Row="2" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sets:"/>
-                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" x:Name="SetsEntry" Text="3" Keyboard="Numeric"/>
+                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="SetsEntry" Text="3" Keyboard="Numeric"/>
                 <Label Grid.Row="3" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Start up:"/>
-                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" x:Name="StartUpEntry" Text="3" Keyboard="Numeric"/>
+                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="StartUpEntry" Text="3" Keyboard="Numeric"/>
                 <Label Grid.Row="4" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sound:"/>
                 <RadioButton Grid.Row="4" Grid.Column="1" x:Name="EffectsRadioButton" Content="Effects" IsChecked="True"/>
                 <RadioButton Grid.Row="4" Grid.Column="2" x:Name="VoiceRadioButton" Content="Voice"/>
+                <RadioButton Grid.Row="4" Grid.Column="3" x:Name="MuteRadioButton" Content="Off"/>
             </Grid>
         </StackLayout>
     </StackLayout>
