@@ -5,11 +5,17 @@ namespace SuperSetTimer
 {
     public partial class MainPage : ContentPage
     {
-        private Countdown _countdown;
+        private readonly Countdown _countdown;
+
         public MainPage()
         {
             InitializeComponent();
 
+            Audio audio = new Audio()
+            {
+                EffectRadioButton = EffectsRadioButton,
+                MuteRadioButton = MuteRadioButton
+            };
             _countdown = new Countdown
             {
                 StartUpEntry = StartUpEntry,
@@ -22,7 +28,8 @@ namespace SuperSetTimer
                 ProgressBar = ProgressBar,
                 SetLabel = SetLabel,
                 ActionButton = ActionButton,
-                ResetButton = ResetButton
+                ResetButton = ResetButton,
+                Audio = audio
             };
         }
 

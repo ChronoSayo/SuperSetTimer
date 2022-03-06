@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Timers;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -32,6 +31,7 @@ namespace SuperSetTimer
         public ProgressBar ProgressBar { get; set; }
         public Button ActionButton { get; set; }
         public Button ResetButton { get; set; }
+        public Audio Audio { get; set; }
 
         private uint StartUpTime => uint.Parse(StartUpEntry.Text);
         private uint ActiveTime => uint.Parse(ActiveEntry.Text);
@@ -86,6 +86,8 @@ namespace SuperSetTimer
                 TimerText = remainingTimer.ToString(@"m\:ss\.ff");
 
                 ProgressBar.Progress += _progressSpeed;
+
+                Audio.PlayCountdown((int)remainingTimer.TotalSeconds);
                 
                 if(remainingTimer.TotalMilliseconds > 0)
                     return;
@@ -101,19 +103,19 @@ namespace SuperSetTimer
                 {
                     _setsDone++;
                     SetText = "Sets: " + _setsDone + "/" + Sets;
-                    SetVisualsByState(State.Active);
+                    SetState(State.Active);
                 }
                 else
                 {
                     if (_setsDone >= Sets)
                     {
-                        SetVisualsByState(State.StandBy);
+                        SetState(State.StandBy);
                         EnableEntries(true);
                         Reset();
                         return;
                     }
 
-                    SetVisualsByState(State.Cooldown);
+                    SetState(State.Cooldown);
                 }
 
                 _stopWatch.Restart();
@@ -131,7 +133,8 @@ namespace SuperSetTimer
                     _isCooldown = true;
                     _startUp = true;
                     _setsDone = 0;
-                    SetVisualsByState(State.StartUp);
+                    ProgressBar.Progress = 0;
+                    SetState(State.StartUp);
                     ResetButton.IsEnabled = false;
                     break;
                 case State.Cooldown:
@@ -140,14 +143,14 @@ namespace SuperSetTimer
                     _stopWatch.Stop();
                     _timer.Stop();
                     _fromCountingState = _state;
-                    SetVisualsByState(State.Paused);
+                    SetState(State.Paused);
                     ResetButton.IsEnabled = true;
                     break;
                 case State.Paused:
                     _stopWatch.Start();
                     _timer.Start();
                     ResetButton.IsEnabled = false;
-                    SetVisualsByState(_fromCountingState);
+                    SetState(_fromCountingState);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -168,7 +171,7 @@ namespace SuperSetTimer
             StartUpEntry.IsEnabled = enable;
         }
 
-        private void SetVisualsByState(State state)
+        private void SetState(State state)
         {
             _state = state;
             Color bgColor = Color.AliceBlue;
@@ -179,29 +182,34 @@ namespace SuperSetTimer
                     statusText = "DONE";
                     ActionButtonText = "START";
                     _fromCountingState = State.Active;
+                    Audio.PlayDone();
                     break;
                 case State.StartUp:
                     statusText = "Get ready!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.CadetBlue;
                     SetProgress(StartUpTime);
+                    Audio.PlayStartUp();
                     break;
                 case State.Active:
                     statusText = "GO!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.Green;
                     SetProgress(ActiveTime);
+                    Audio.PlayActive();
                     break;
                 case State.Cooldown:
                     statusText = "Rest";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.Yellow;
                     SetProgress(CooldownTime);
+                    Audio.PlayCooldown();
                     break;
                 case State.Paused:
                     statusText = "Paused";
                     ActionButtonText = "RESUME";
                     bgColor = Color.Red;
+                    Audio.PlayPause();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -228,13 +236,14 @@ namespace SuperSetTimer
             _timer.Enabled = false;
 
             _startUp = true;
-            TimerText = "0.0";
             _setsDone = 0;
             ProgressBar.Progress = 0;
+
+            TimerText = "0.0";
             StatusText = "-";
             SetText = "Sets: -/-";
 
-            SetVisualsByState(State.StandBy);
+            SetState(State.StandBy);
             EnableEntries(true);
         }
     }
