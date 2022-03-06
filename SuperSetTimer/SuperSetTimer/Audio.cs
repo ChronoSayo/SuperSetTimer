@@ -73,7 +73,7 @@ namespace SuperSetTimer
                 case 3:
                 case 2:
                 case 1:
-                    if(!_countdowns[i])
+                    if(!_countdowns[i] || Mute)
                         _countdowns[i] = LoadAndPlayCountdown(Effects ? "countdown.ogg" : countdown + ".wav", _countdowns[i]);
                     break;
                 case 0:
