@@ -7,14 +7,11 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
-    
-    - name: Setup MSBuild.exe
-      uses: warrenbuckley/Setup-MSBuild@v1
       
     - name: Android
       run: |
         cd SuperSetTimer
-        ls
         nuget restore
         cd SuperSetTimer.Android
+        echo “::add-path::C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin”
         msbuild SuperSetTimer.Android.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug
