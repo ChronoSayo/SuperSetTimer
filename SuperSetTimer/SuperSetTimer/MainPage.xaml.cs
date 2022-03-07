@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Timers;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SuperSetTimer
@@ -14,6 +8,8 @@ namespace SuperSetTimer
         private Countdown _countdown;
         public MainPage()
         {
+            InitializeComponent();
+
             _countdown = new Countdown
             {
                 StartUpEntry = StartUpEntry,
@@ -21,7 +17,10 @@ namespace SuperSetTimer
                 CooldownEntry = CooldownEntry,
                 SetsEntry = SetsEntry,
                 StatusLabel = StatusLabel,
-                TimerLabel = TimerLabel
+                TimerLabel = TimerLabel,
+                StatusFrame = StatusFrame,
+                ProgressBar = ProgressBar,
+                SetLabel = SetLabel
             };
         }
 
