@@ -14,6 +14,7 @@ jobs:
 
     - name: Build      
       run: |
+        ls
         cd SuperSetTimer\SuperSetTimer
         dotnet build --configuration Release --no-restore
         msbuild SuperSetTimer.csproj /t:PackageForAndroid /p:Configuration=Debug
