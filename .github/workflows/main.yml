@@ -7,13 +7,15 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
-      
+    
+    - name: Setup MSBuild path
+    uses: microsoft/setup-msbuild@v1.0.0
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+        
     - name: Android
       run: |
         cd SuperSetTimer
         nuget restore
         cd SuperSetTimer.Android
-        echo “::add-path::C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin”
         msbuild SuperSetTimer.Android.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug
-    env:
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
