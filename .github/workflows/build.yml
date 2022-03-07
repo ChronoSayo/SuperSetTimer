@@ -15,5 +15,8 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
 
-    - name: Build
-      run: msbuild SuperSetTimer/SuperSetTimer/SuperSetTimer.csproj /t:PackageForAndroid /p:Configuration=Debug
+    - name: Build      
+      run: |
+        cd SuperSetTimer\SuperSetTimer
+        dotnet build --configuration Release --no-restore
+        msbuild SuperSetTimer.csproj /t:PackageForAndroid /p:Configuration=Debug
