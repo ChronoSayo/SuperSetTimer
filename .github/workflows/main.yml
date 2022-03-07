@@ -8,8 +8,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     
-    - name: Setup MSBuild path
-    uses: microsoft/setup-msbuild@v1.0.0
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         
