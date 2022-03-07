@@ -13,7 +13,7 @@ jobs:
         dotnet-version: '5.0.x'
 
     - name: Install dependencies
-      run: nuget restore SuperSetTimer/SuperSetTimer.sln
+      run: dotnet restore
 
     - name: Build
       run: msbuild SuperSetTimer/SuperSetTimer/SuperSetTimer.csproj /t:PackageForAndroid /p:Configuration=Debug
