@@ -4,15 +4,9 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Test
-    - name: Build Android
-      run: MSBuild /t:SignAndroidPackage /p:Configuration=Release /p:AndroidPackageFormat=apk 
-
     - name: Setup .NET Core SDK 5.0.x
       uses: actions/setup-dotnet@v1
       with:
