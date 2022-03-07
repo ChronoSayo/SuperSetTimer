@@ -5,11 +5,17 @@ namespace SuperSetTimer
 {
     public partial class MainPage : ContentPage
     {
-        private Countdown _countdown;
+        private readonly Countdown _countdown;
+
         public MainPage()
         {
             InitializeComponent();
 
+            Audio audio = new Audio()
+            {
+                EffectRadioButton = EffectsRadioButton,
+                MuteRadioButton = MuteRadioButton
+            };
             _countdown = new Countdown
             {
                 StartUpEntry = StartUpEntry,
@@ -20,18 +26,16 @@ namespace SuperSetTimer
                 TimerLabel = TimerLabel,
                 StatusFrame = StatusFrame,
                 ProgressBar = ProgressBar,
-                SetLabel = SetLabel
+                SetLabel = SetLabel,
+                ActionButton = ActionButton,
+                ResetButton = ResetButton,
+                Audio = audio
             };
         }
 
-        private void OnTimerStart(object sender, EventArgs e)
+        private void OnTimerAction(object sender, EventArgs e)
         {
-            _countdown.Start();
-        }
-
-        private void OnTimerStop(object sender, EventArgs e)
-        {
-            _countdown.Stop();
+            _countdown.Action();
         }
 
         private void OnTimerReset(object sender, EventArgs e)

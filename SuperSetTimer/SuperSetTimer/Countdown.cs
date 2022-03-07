@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Timers;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -12,7 +11,9 @@ namespace SuperSetTimer
         private readonly Timer _timer;
         private readonly Stopwatch _stopWatch;
         private int _setsDone;
-        private bool _isCooldown, _startUp, _paused;
+        private double _progressSpeed;
+        private bool _isCooldown, _startUp;
+        private State _state, _fromCountingState;
 
         private enum State
         {
@@ -28,15 +29,17 @@ namespace SuperSetTimer
         public Label SetLabel { get; set; }
         public Frame StatusFrame { get; set; }
         public ProgressBar ProgressBar { get; set; }
+        public Button ActionButton { get; set; }
+        public Button ResetButton { get; set; }
+        public Audio Audio { get; set; }
 
-        private int StartUpTime => int.Parse(StartUpEntry.Text);
-        private int ActiveTime => int.Parse(ActiveEntry.Text);
-        private int CooldownTime => int.Parse(CooldownEntry.Text);
+        private uint StartUpTime => uint.Parse(StartUpEntry.Text);
+        private uint ActiveTime => uint.Parse(ActiveEntry.Text);
+        private uint CooldownTime => uint.Parse(CooldownEntry.Text);
         private int Sets => int.Parse(SetsEntry.Text);
 
         private string TimerText
         {
-            get => TimerLabel.Text;
             set => TimerLabel.Text = value;
         }
         private string StatusText
@@ -46,6 +49,10 @@ namespace SuperSetTimer
         private string SetText
         {
             set => SetLabel.Text = value;
+        }
+        private string ActionButtonText
+        {
+            set => ActionButton.Text = value;
         }
 
         public Countdown()
@@ -58,17 +65,18 @@ namespace SuperSetTimer
 
             _isCooldown = false;
             _startUp = true;
-            _paused = false;
+
+            _fromCountingState = State.Active;
+            _state = State.StandBy;
 
             _stopWatch = new Stopwatch();
         }
 
         private void OnTimerTick(object sender, ElapsedEventArgs e)
         {
-            ProgressBar.Progress = 0;
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                int setTimer;
+                uint setTimer;
                 if (_startUp)
                     setTimer = StartUpTime;
                 else
@@ -77,11 +85,17 @@ namespace SuperSetTimer
                 
                 TimerText = remainingTimer.ToString(@"m\:ss\.ff");
 
-                if (remainingTimer.Seconds >= 0 && remainingTimer.Milliseconds >= 0)
+                ProgressBar.Progress += _progressSpeed;
+
+                Audio.PlayCountdown((int)remainingTimer.TotalSeconds);
+                
+                if(remainingTimer.TotalMilliseconds > 0)
                     return;
+                
+                ProgressBar.Progress = 0;
 
                 _isCooldown = !_isCooldown;
-
+                
                 if (_startUp) 
                     _startUp = false;
 
@@ -89,55 +103,63 @@ namespace SuperSetTimer
                 {
                     _setsDone++;
                     SetText = "Sets: " + _setsDone + "/" + Sets;
-                    SetVisualsByState(State.Active);
+                    SetState(State.Active);
                 }
                 else
                 {
                     if (_setsDone >= Sets)
                     {
-                        SetVisualsByState(State.StandBy);
+                        SetState(State.StandBy);
                         EnableEntries(true);
                         Reset();
                         return;
                     }
 
-                    SetVisualsByState(State.Cooldown);
+                    SetState(State.Cooldown);
                 }
 
                 _stopWatch.Restart();
             });
         }
 
-        public void Start()
+        public void Action()
         {
-            _stopWatch.Start();
-            _timer.Enabled = true;
-            _timer.Start();
-            if (!_paused)
+            switch (_state)
             {
-                _isCooldown = true;
-                _startUp = true;
-                _setsDone = 0;
-                ProgressBar.Progress = 0;
-                SetVisualsByState(State.StartUp);
+                case State.StandBy:
+                    _stopWatch.Start();
+                    _timer.Enabled = true;
+                    _timer.Start();
+                    _isCooldown = true;
+                    _startUp = true;
+                    _setsDone = 0;
+                    ProgressBar.Progress = 0;
+                    SetState(State.StartUp);
+                    ResetButton.IsEnabled = false;
+                    break;
+                case State.Cooldown:
+                case State.StartUp:
+                case State.Active:
+                    _stopWatch.Stop();
+                    _timer.Stop();
+                    _fromCountingState = _state;
+                    SetState(State.Paused);
+                    ResetButton.IsEnabled = true;
+                    break;
+                case State.Paused:
+                    _stopWatch.Start();
+                    _timer.Start();
+                    ResetButton.IsEnabled = false;
+                    SetState(_fromCountingState);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            else
-                _paused = false;
-
+            
             EnableEntries(false);
-
-        }
-        public void Stop()
-        {
-            _stopWatch.Stop();
-            _timer.Enabled = false;
-            _timer.Stop();
-            _paused = true;
-            SetVisualsByState(State.Paused);
         }
         public void TimerReset()
         {
-            SetVisualsByState(State.StandBy);
             Reset();
         }
 
@@ -149,35 +171,45 @@ namespace SuperSetTimer
             StartUpEntry.IsEnabled = enable;
         }
 
-        private async void SetVisualsByState(State state)
+        private void SetState(State state)
         {
-            ProgressBar.Progress = 0;
+            _state = state;
             Color bgColor = Color.AliceBlue;
             string statusText;
-            int time = 0;
             switch (state)
             {
                 case State.StandBy:
                     statusText = "DONE";
+                    ActionButtonText = "START";
+                    _fromCountingState = State.Active;
+                    Audio.PlayDone();
                     break;
                 case State.StartUp:
                     statusText = "Get ready!";
+                    ActionButtonText = "PAUSE";
                     bgColor = Color.CadetBlue;
-                    time = StartUpTime;
+                    SetProgress(StartUpTime);
+                    Audio.PlayStartUp();
                     break;
                 case State.Active:
                     statusText = "GO!";
+                    ActionButtonText = "PAUSE";
                     bgColor = Color.Green;
-                    time = ActiveTime;
+                    SetProgress(ActiveTime);
+                    Audio.PlayActive();
                     break;
                 case State.Cooldown:
                     statusText = "Rest";
+                    ActionButtonText = "PAUSE";
                     bgColor = Color.Yellow;
-                    time = CooldownTime;
+                    SetProgress(CooldownTime);
+                    Audio.PlayCooldown();
                     break;
                 case State.Paused:
                     statusText = "Paused";
+                    ActionButtonText = "RESUME";
                     bgColor = Color.Red;
+                    Audio.PlayPause();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -185,14 +217,14 @@ namespace SuperSetTimer
 
             StatusText = statusText;
             StatusFrame.BackgroundColor = bgColor;
-            
-            await ShowProgressBar((uint)time);
         }
 
-        private async Task ShowProgressBar(uint time)
+        private void SetProgress(uint time)
         {
-            ProgressBar.Progress = 0;
-            await ProgressBar.ProgressTo(1, time * 1000, Easing.Linear);
+            if(_fromCountingState == State.StandBy)
+                return;
+
+            _progressSpeed = 1.075 / (time * 1000);
         }
 
         private void Reset()
@@ -204,7 +236,14 @@ namespace SuperSetTimer
             _timer.Enabled = false;
 
             _startUp = true;
+            _setsDone = 0;
+            ProgressBar.Progress = 0;
+
             TimerText = "0.0";
+            StatusText = "-";
+            SetText = "Sets: -/-";
+
+            SetState(State.StandBy);
             EnableEntries(true);
         }
     }
