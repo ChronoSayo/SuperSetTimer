@@ -4,7 +4,7 @@ using Xamarin.Forms;
 
 namespace SuperSetTimer
 {
-    class Audio
+    public class Audio
     {
         private readonly ISimpleAudioPlayer _player;
         private readonly List<bool> _countdowns;
