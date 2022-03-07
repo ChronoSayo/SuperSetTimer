@@ -6,7 +6,7 @@ using Xamarin.Forms;
 
 namespace SuperSetTimer
 {
-    class Countdown
+    public class Countdown
     {
         private readonly Timer _timer;
         private readonly Stopwatch _stopWatch;
