@@ -21,7 +21,14 @@ jobs:
     - name: Setup MSBuild.exe
       uses: warrenbuckley/Setup-MSBuild@v1
       env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'    
+
+    - name: Test
+      run: |
+        cd SuperSetTimer
+        nuget restore
+        cd SuperSetTimer.Tests
+        msbuild SuperSetTimer.Tests.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug
         
     - name: Android
       run: |
@@ -29,10 +36,3 @@ jobs:
         nuget restore
         cd SuperSetTimer.Android
         msbuild SuperSetTimer.Android.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug
-    
-    - name: Test
-      run: |
-        cd SuperSetTimer
-        nuget restore
-        cd SuperSetTimer.Tests
-        msbuild SuperSetTimer.Tests.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug
