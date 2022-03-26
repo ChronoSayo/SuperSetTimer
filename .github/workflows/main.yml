@@ -10,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Run Tests
-        run: bash ./gradlew test --stacktrace  
+        run: bash ./SuperSetTimer/SuperSetTimer.Tests SuperSetTimer.Tests.sln --stacktrace  
   apk:
     name: Generate APK
     needs: test
