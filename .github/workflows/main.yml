@@ -25,9 +25,8 @@ jobs:
 
     - name: Test
       run: |
-        cd SuperSetTimer
+        cd SuperSetTimer\SuperSetTimer.Tests
         nuget restore
-        cd SuperSetTimer.Tests
         msbuild SuperSetTimer.Tests.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug
         
     - name: Android
