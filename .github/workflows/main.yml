@@ -20,6 +20,7 @@ jobs:
         run: msbuild ./${{ env.APPLICATION_NAME }}.sln /restore /p:Configuration=Release
 
       - name: Test
+        uses: actions/checkout@v2
         run: dotnet test
 
       - name: Create and Sign the APK
