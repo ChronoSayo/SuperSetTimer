@@ -22,6 +22,9 @@ jobs:
       - name: Create and Sign the APK
         run: msbuild ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\${{ env.APPLICATION_NAME }}.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
 
+      - name: List folder content
+        run: dir ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\bin\Release
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
