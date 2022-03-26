@@ -2,38 +2,24 @@ name: Build Xamarin.Android app
 
 on: [push]
 
-jobs:    
-  Android:
+jobs:
+  test:
+    name: Run Unit Tests
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v1
-    
-    - uses: actions/checkout@v2
-    - name: Set default Xamarin SDK versions
-      run: |
-        "'$VM_ASSETS'/select-xamarin-sdk-v2.sh"
-        
-    - name: Setup .NET Core SDK 5.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.x'
-    
-    - name: Setup MSBuild.exe
-      uses: warrenbuckley/Setup-MSBuild@v1
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'    
-
-    - name: Test
-      run: |
-        cd ..
-        ls
-        cd SuperSetTimer.Tests
-        nuget restore
-        msbuild SuperSetTimer.Tests.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug
-        
-    - name: Android
-      run: |
-        cd SuperSetTimer
-        nuget restore
-        cd SuperSetTimer.Android
-        msbuild SuperSetTimer.Android.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Run Tests
+        run: bash ./gradlew test --stacktrace  
+  apk:
+    name: Generate APK
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - name: Build APK
+        run: bash ./gradlew assembleDebug --stacktrace
+      - name: Upload APK
+        uses: actions/upload-artifact@v1
+        with:
+          name: apk
+          path: app/build/outputs/apk/debug/app-debug.apk 
