@@ -1,6 +1,10 @@
 name: Build Xamarin.Android app
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - main
+
 
 jobs:
   # Build App
