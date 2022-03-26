@@ -20,7 +20,7 @@ jobs:
         run: msbuild ./${{ env.APPLICATION_NAME }}.sln /restore /p:Configuration=Release
 
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Tests\${{ env.APPLICATION_NAME }}.Tests.csproj --verbosity detailed
 
       - name: Create and Sign the APK
         run: msbuild ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\${{ env.APPLICATION_NAME }}.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
