@@ -86,11 +86,12 @@ namespace SuperSetTimer
 
                 ProgressBar.Progress += _progressSpeed;
 
-                Audio.PlayCountdown((int)remainingTimer.TotalSeconds);
+                Audio.PlayCountdown((int)remainingTimer.TotalSeconds + 1);
                 
                 if(remainingTimer.TotalMilliseconds > 0)
                     return;
                 
+                Audio.ResetCountdown();
                 ProgressBar.Progress = 0;
 
                 _isCooldown = !_isCooldown;

@@ -13,5 +13,6 @@ namespace SuperSetTimer
         void PlayCooldown();
         void PlayPause();
         void PlayCountdown(int countdown);
+        void ResetCountdown();
     }
 }

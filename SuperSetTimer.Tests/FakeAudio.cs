@@ -31,5 +31,8 @@ namespace SuperSetTimer.Tests
         public void PlayCountdown(int countdown)
         {
         }
+        public void ResetCountdown()
+        {
+        }
     }
 }
