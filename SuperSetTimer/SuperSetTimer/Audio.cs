@@ -76,11 +76,13 @@ namespace SuperSetTimer
                     if(!_countdowns[i] || Mute)
                         _countdowns[i] = LoadAndPlayCountdown(Effects ? "countdown.ogg" : countdown + ".wav", _countdowns[i]);
                     break;
-                case 0:
-                    for (int j = 0; j < _countdowns.Count; j++)
-                        _countdowns[j] = false;
-                    break;
             }
+        }
+
+        public void ResetCountdown()
+        {
+            for (int i = 0; i < _countdowns.Count; i++)
+                _countdowns[i] = false;
         }
 
         private bool LoadAndPlayCountdown(string filename, bool played)
