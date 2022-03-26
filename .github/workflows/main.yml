@@ -17,16 +17,16 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Build Solution
-        run: msbuild ./${{ env.APPLICATION_NAME }}.sln /restore /p:Configuration=Release
+        run: msbuild ./${{ env.APPLICATION_NAME }}.sln /restore /p:Configuration=Debug
 
       - name: Create and Sign the APK
-        run: msbuild ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\${{ env.APPLICATION_NAME }}.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
+        run: msbuild ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\${{ env.APPLICATION_NAME }}.Android.csproj /t:SignAndroidPackage /p:Configuration=Debug /p:OutputPath=bin\Debug\
 
       - name: List folder content
-        run: dir ${{ env.APPLICATION_NAME }}.Android\bin\Release
+        run: dir ${{ env.APPLICATION_NAME }}.Android\bin\Debug
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: MyApplication.apk
-          path: ${{ env.APPLICATION_NAME }}.Android\bin\Release\com.companyname.supersettimer-Signed.apk
+          path: ${{ env.APPLICATION_NAME }}.Android\bin\Debug\com.companyname.supersettimer-Signed.apk
