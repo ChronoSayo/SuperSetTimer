@@ -9,7 +9,7 @@ jobs:
     
     env:
       APPLICATION_NAME: SuperSetTimer
-      
+    
     steps:
       - uses: actions/checkout@v2
 
@@ -18,6 +18,9 @@ jobs:
 
       - name: Build Solution
         run: msbuild ./${{ env.APPLICATION_NAME }}.sln /restore /p:Configuration=Release
+
+      - name: Test
+        run: dotnet test
 
       - name: Create and Sign the APK
         run: msbuild ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\${{ env.APPLICATION_NAME }}.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
@@ -28,5 +31,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: MyApplication.apk
-          path: ${{ env.APPLICATION_NAME }}.Android\bin\Release\com.companyname.supersettimer-Signed.apk
+          name: SuperSetTimer.apk
+          path: ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\bin\Release\com.companyname.supersettimer-Signed.apk
