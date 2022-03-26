@@ -3,23 +3,31 @@ name: Build Xamarin.Android app
 on: [push]
 
 jobs:
-  test:
-    name: Run Unit Tests
+  # Build App
+  build:
     runs-on: windows-latest
+    
+    env:
+      APPLICATION_NAME: SuperSetTimer
+      PACKAGE_NAME: com.companyname.supersettimer
+      
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Run Tests
-        run: bash ./SuperSetTimer/SuperSetTimer.Tests SuperSetTimer.Tests.csproj --stacktrace  
-  apk:
-    name: Generate APK
-    needs: test
-    runs-on: windows-latest
-    steps:
-      - name: Build APK
-        run: bash ./gradlew assembleDebug --stacktrace
-      - name: Upload APK
-        uses: actions/upload-artifact@v1
+      - uses: actions/checkout@v2
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Build Solution
+        run: msbuild ./${{ env.APPLICATION_NAME }}.sln /restore /p:Configuration=Release
+
+      - name: Create and Sign the APK
+        run: msbuild ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\${{ env.APPLICATION_NAME }}.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
+
+      - name: List folder content
+        run: dir ${{ env.APPLICATION_NAME }}.Android\bin\Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
-          name: apk
-          path: app/build/outputs/apk/debug/app-debug.apk 
+          name: MyApplication.apk
+          path: ${{ env.APPLICATION_NAME }}.Android\bin\Release\${{ PACKAGE_NAME }}-Signed.apk
