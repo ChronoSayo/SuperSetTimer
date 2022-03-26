@@ -4,16 +4,16 @@ using Xamarin.Forms;
 
 namespace SuperSetTimer
 {
-    public class Audio
+    public class Audio : IAudio
     {
         private readonly ISimpleAudioPlayer _player;
         private readonly List<bool> _countdowns;
 
         public RadioButton MuteRadioButton { get; set; }
         public RadioButton EffectRadioButton { get; set; }
-
-        private bool Mute => MuteRadioButton.IsChecked;
-        private bool Effects => EffectRadioButton.IsChecked;
+        
+        bool Mute => MuteRadioButton.IsChecked;
+        bool Effects => EffectRadioButton.IsChecked;
 
         public Audio()
         {

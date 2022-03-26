@@ -42,5 +42,14 @@ namespace SuperSetTimer
         {
             _countdown.TimerReset();
         }
+
+        private void EntryInputCheck(object sender, EventArgs e)
+        {
+            if (_countdown.CorrectEntryNumber(((Entry) sender).Text, out string error)) 
+                return;
+
+            DisplayAlert("Wrong input", "Input can only be a number", "OK");
+            ((Entry) sender).Text = error;
+        }
     }
 }

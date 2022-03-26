@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Timers;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SuperSetTimer
@@ -31,7 +30,7 @@ namespace SuperSetTimer
         public ProgressBar ProgressBar { get; set; }
         public Button ActionButton { get; set; }
         public Button ResetButton { get; set; }
-        public Audio Audio { get; set; }
+        public IAudio Audio { get; set; }
 
         private uint StartUpTime => uint.Parse(StartUpEntry.Text);
         private uint ActiveTime => uint.Parse(ActiveEntry.Text);
@@ -74,7 +73,7 @@ namespace SuperSetTimer
 
         private void OnTimerTick(object sender, ElapsedEventArgs e)
         {
-            MainThread.BeginInvokeOnMainThread(() =>
+            Device.BeginInvokeOnMainThread(() =>
             {
                 uint setTimer;
                 if (_startUp)
@@ -245,6 +244,12 @@ namespace SuperSetTimer
 
             SetState(State.StandBy);
             EnableEntries(true);
+        }
+
+        public bool CorrectEntryNumber(string text, out string error)
+        {
+            error = "1";
+            return uint.TryParse(text, out uint i);
         }
     }
 }
