@@ -25,7 +25,7 @@ jobs:
 
     - name: Test
       run: |
-        cd SuperSetTimer\SuperSetTimer.Tests
+        cd SuperSetTimer.Tests
         nuget restore
         msbuild SuperSetTimer.Tests.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug
         
