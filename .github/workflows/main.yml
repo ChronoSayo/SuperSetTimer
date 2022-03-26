@@ -1,0 +1,39 @@
+name: Build Xamarin.Android app
+
+on:
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+  # Build App
+  build:
+    runs-on: windows-latest
+    
+    env:
+      APPLICATION_NAME: SuperSetTimer
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Build Solution
+        run: msbuild ./${{ env.APPLICATION_NAME }}.sln /restore /p:Configuration=Release
+
+      - name: Test
+        run: dotnet test ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Tests\${{ env.APPLICATION_NAME }}.Tests.csproj --verbosity detailed
+
+      - name: Create and Sign the APK
+        run: msbuild ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\${{ env.APPLICATION_NAME }}.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
+
+      - name: List folder content
+        run: dir ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\bin\Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SuperSetTimer.apk
+          path: ./${{ env.APPLICATION_NAME }}/${{ env.APPLICATION_NAME }}.Android\bin\Release\com.companyname.supersettimer-Signed.apk

@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SuperSetTimer\SuperSetTimer\SuperSetTimer.csproj" />
+    <ProjectReference Include="..\SuperSetTimer\SuperSetTimer.csproj" />
   </ItemGroup>
 
 </Project>
