@@ -18,19 +18,25 @@ namespace SuperSetTimer
             };
             _countdown = new Countdown
             {
+                WorkoutsPicker = WorkoutsPicker,
                 StartUpEntry = StartUpEntry,
-                ActiveEntry = ActiveEntry,
-                CooldownEntry = CooldownEntry,
+                ActiveEntry1 = ActiveEntry1,
+                ActiveEntry2 = ActiveEntry2,
+                ActiveEntry3 = ActiveEntry3,
+                CooldownEntry = RestEntry,
                 SetsEntry = SetsEntry,
                 StatusLabel = StatusLabel,
                 TimerLabel = TimerLabel,
                 StatusFrame = StatusFrame,
                 ProgressBar = ProgressBar,
+                WorkoutsLabel = WorkoutLabel,
                 SetLabel = SetLabel,
                 ActionButton = ActionButton,
                 ResetButton = ResetButton,
                 Audio = audio
             };
+
+            _countdown.WorkoutsPicker.SelectedIndex = 0;
         }
 
         private void OnTimerAction(object sender, EventArgs e)
@@ -50,6 +56,11 @@ namespace SuperSetTimer
 
             DisplayAlert("Wrong input", "Input can only be a number", "OK");
             ((Entry) sender).Text = error;
+        }
+
+        private void OnWorkoutsChanged(object sender, EventArgs e)
+        {
+            _countdown.AmountOfWorkouts(int.Parse(((Picker)sender).SelectedItem.ToString()));
         }
     }
 }

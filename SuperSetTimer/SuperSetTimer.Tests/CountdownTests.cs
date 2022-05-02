@@ -20,7 +20,9 @@ namespace SuperSetTimer.Tests
             _countdown = new Countdown
             {
                 StartUpEntry = new Entry { Text = "1" },
-                ActiveEntry = new Entry { Text = "1" },
+                ActiveEntry1 = new Entry { Text = "2" },
+                ActiveEntry2 = new Entry { Text = "3" },
+                ActiveEntry3 = new Entry { Text = "4" },
                 CooldownEntry = new Entry { Text = "1" },
                 SetsEntry = new Entry { Text = "2" },
                 StatusLabel = new Label { Text = "Status" },
