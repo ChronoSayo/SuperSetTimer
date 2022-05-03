@@ -1,4 +1,3 @@
-using System.Threading;
 using Xunit;
 using Xamarin.Forms;
 
@@ -19,23 +18,28 @@ namespace SuperSetTimer.Tests
             };
             _countdown = new Countdown
             {
-                StartUpEntry = new Entry { Text = "1" },
-                ActiveEntry = new Entry { Text = "1" },
-                CooldownEntry = new Entry { Text = "1" },
+                WorkoutsPicker = new Picker(),
+                PrepareEntry = new Entry { Text = "1" },
+                ActiveEntry1 = new Entry { Text = "1" },
+                ActiveEntry2 = new Entry { Text = "1" },
+                ActiveEntry3 = new Entry { Text = "1" },
+                RestEntry = new Entry { Text = "1" },
                 SetsEntry = new Entry { Text = "2" },
                 StatusLabel = new Label { Text = "Status" },
                 TimerLabel = new Label { Text = "1" },
                 SetLabel = new Label { Text = "1" },
+                WorkoutsLabel = new Label {Text = "3"},
                 StatusFrame = new Frame(),
                 ProgressBar = new ProgressBar(),
                 ActionButton = new Button(),
                 ResetButton = new Button(),
                 Audio = audio
             };
+            _countdown.AmountOfWorkouts(1);
         }
 
         [Fact]
-        public void Countdown_StartUp_Test()
+        public void Countdown_Prepare_Test()
         {
             _countdown.Action();
             
@@ -53,7 +57,7 @@ namespace SuperSetTimer.Tests
         }
 
         [Fact]
-        public void Countdown_Cooldown_Test()
+        public void Countdown_Rest_Test()
         {
             _countdown.Action();
 
@@ -65,6 +69,28 @@ namespace SuperSetTimer.Tests
         [Fact]
         public void Countdown_Done_Test()
         {
+            _countdown.Action();
+
+            while (_countdown.StatusLabel.Text != "DONE") { }
+
+            Assert.Equal("DONE", _countdown.StatusLabel.Text);
+        }
+
+        [Fact]
+        public void Countdown_2WorkoutsDone_Test()
+        {
+            _countdown.AmountOfWorkouts(2);
+            _countdown.Action();
+
+            while (_countdown.StatusLabel.Text != "DONE") { }
+
+            Assert.Equal("DONE", _countdown.StatusLabel.Text);
+        }
+
+        [Fact]
+        public void Countdown_3WorkoutsDone_Test()
+        {
+            _countdown.AmountOfWorkouts(3);
             _countdown.Action();
 
             while (_countdown.StatusLabel.Text != "DONE") { }
@@ -126,7 +152,7 @@ namespace SuperSetTimer.Tests
         {
             _countdown.TimerReset();
 
-            Assert.Equal("0.0", _countdown.TimerLabel.Text);
+            Assert.Equal("0", _countdown.TimerLabel.Text);
         }
     }
 }

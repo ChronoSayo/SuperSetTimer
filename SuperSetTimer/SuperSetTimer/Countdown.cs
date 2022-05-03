@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Timers;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SuperSetTimer
@@ -9,22 +10,27 @@ namespace SuperSetTimer
     {
         private readonly Timer _timer;
         private readonly Stopwatch _stopWatch;
-        private int _setsDone;
+        private int _setsDone, _workouts, _currentWorkout;
+        private uint _currentActiveTime;
         private double _progressSpeed;
         private bool _isCooldown, _startUp;
         private State _state, _fromCountingState;
 
         private enum State
         {
-            StandBy, StartUp, Active, Cooldown, Paused
+            StandBy, Prepare, Active, Rest, Paused
         }
-
-        public Entry StartUpEntry { get; set; }
-        public Entry ActiveEntry { get; set; }
-        public Entry CooldownEntry { get; set; }
+        
+        public Picker WorkoutsPicker { get; set; }
+        public Entry PrepareEntry { get; set; }
+        public Entry ActiveEntry1 { get; set; }
+        public Entry ActiveEntry2 { get; set; }
+        public Entry ActiveEntry3 { get; set; }
+        public Entry RestEntry { get; set; }
         public Entry SetsEntry { get; set; }
         public Label TimerLabel { get; set; }
         public Label StatusLabel { get; set; }
+        public Label WorkoutsLabel { get; set; }
         public Label SetLabel { get; set; }
         public Frame StatusFrame { get; set; }
         public ProgressBar ProgressBar { get; set; }
@@ -32,9 +38,11 @@ namespace SuperSetTimer
         public Button ResetButton { get; set; }
         public IAudio Audio { get; set; }
 
-        private uint StartUpTime => uint.Parse(StartUpEntry.Text);
-        private uint ActiveTime => uint.Parse(ActiveEntry.Text);
-        private uint CooldownTime => uint.Parse(CooldownEntry.Text);
+        private uint StartUpTime => uint.Parse(PrepareEntry.Text);
+        private uint ActiveTime1 => uint.Parse(ActiveEntry1.Text);
+        private uint ActiveTime2 => uint.Parse(ActiveEntry2.Text);
+        private uint ActiveTime3 => uint.Parse(ActiveEntry3.Text);
+        private uint CooldownTime => uint.Parse(RestEntry.Text);
         private int Sets => int.Parse(SetsEntry.Text);
 
         private string TimerText
@@ -44,6 +52,10 @@ namespace SuperSetTimer
         private string StatusText
         {
             set => StatusLabel.Text = value;
+        }
+        private string WorkoutsText
+        {
+            set => WorkoutsLabel.Text = value;
         }
         private string SetText
         {
@@ -79,7 +91,7 @@ namespace SuperSetTimer
                 if (_startUp)
                     setTimer = StartUpTime;
                 else
-                    setTimer = _isCooldown ? CooldownTime : ActiveTime;
+                    setTimer = _isCooldown ? CooldownTime : _currentActiveTime;
                 TimeSpan remainingTimer = TimeSpan.FromSeconds(setTimer) - _stopWatch.Elapsed;
                 
                 TimerText = remainingTimer.ToString(@"m\:ss\.ff");
@@ -101,8 +113,14 @@ namespace SuperSetTimer
 
                 if (!_isCooldown)
                 {
-                    _setsDone++;
-                    SetText = "Sets: " + _setsDone + "/" + Sets;
+                    _currentWorkout++;
+                    if (_currentWorkout > _workouts)
+                    {
+                        _currentWorkout = 0;
+                        _setsDone++;
+                    }
+                    UpdateWorkoutSetText();
+
                     SetState(State.Active);
                 }
                 else
@@ -115,7 +133,7 @@ namespace SuperSetTimer
                         return;
                     }
 
-                    SetState(State.Cooldown);
+                    SetState(State.Rest);
                 }
 
                 _stopWatch.Restart();
@@ -134,11 +152,14 @@ namespace SuperSetTimer
                     _startUp = true;
                     _setsDone = 0;
                     ProgressBar.Progress = 0;
-                    SetState(State.StartUp);
+                    SetState(State.Prepare);
                     ResetButton.IsEnabled = false;
+                    SetScreenOn(true);
+                    _currentWorkout = 0;
+                    UpdateWorkoutSetText();
                     break;
-                case State.Cooldown:
-                case State.StartUp:
+                case State.Rest:
+                case State.Prepare:
                 case State.Active:
                     _stopWatch.Stop();
                     _timer.Stop();
@@ -151,6 +172,7 @@ namespace SuperSetTimer
                     _timer.Start();
                     ResetButton.IsEnabled = false;
                     SetState(_fromCountingState);
+                    SetScreenOn(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -163,12 +185,47 @@ namespace SuperSetTimer
             Reset();
         }
 
+        public void AmountOfWorkouts(int workouts)
+        {
+            _workouts = workouts;
+            switch (_workouts)
+            {
+                case 1:
+                    ActiveEntry2.IsEnabled = false;
+                    ActiveEntry3.IsEnabled = false;
+                    break;
+                case 2:
+                    ActiveEntry2.IsEnabled = true;
+                    ActiveEntry3.IsEnabled = false;
+                    break;
+                case 3:
+                    ActiveEntry2.IsEnabled = true;
+                    ActiveEntry3.IsEnabled = true;
+                    break;
+            }
+
+            UpdateWorkoutSetText();
+        }
+
         private void EnableEntries(bool enable)
         {
-            CooldownEntry.IsEnabled = enable;
-            ActiveEntry.IsEnabled = enable;
+            WorkoutsPicker.IsEnabled = enable;
+            RestEntry.IsEnabled = enable;
+            ActiveEntriesEnable(enable);
             SetsEntry.IsEnabled = enable;
-            StartUpEntry.IsEnabled = enable;
+            PrepareEntry.IsEnabled = enable;
+        }
+
+        private void ActiveEntriesEnable(bool enable)
+        {
+            ActiveEntry1.IsEnabled = enable;
+            if (_workouts == 2)
+                ActiveEntry2.IsEnabled = enable;
+            else if (_workouts > 2)
+            {
+                ActiveEntry2.IsEnabled = enable;
+                ActiveEntry3.IsEnabled = enable;
+            }
         }
 
         private void SetState(State state)
@@ -184,7 +241,7 @@ namespace SuperSetTimer
                     _fromCountingState = State.Active;
                     Audio.PlayDone();
                     break;
-                case State.StartUp:
+                case State.Prepare:
                     statusText = "Get ready!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.CadetBlue;
@@ -195,10 +252,22 @@ namespace SuperSetTimer
                     statusText = "GO!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.Green;
-                    SetProgress(ActiveTime);
+                    switch (_currentWorkout)
+                    {
+                        case 1:
+                            _currentActiveTime = ActiveTime1;
+                            break;
+                        case 2:
+                            _currentActiveTime = ActiveTime2;
+                            break;
+                        case 3:
+                            _currentActiveTime = ActiveTime3;
+                            break;
+                    }
+                    SetProgress(_currentActiveTime);
                     Audio.PlayActive();
                     break;
-                case State.Cooldown:
+                case State.Rest:
                     statusText = "Rest";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.Yellow;
@@ -239,12 +308,26 @@ namespace SuperSetTimer
             _setsDone = 0;
             ProgressBar.Progress = 0;
 
-            TimerText = "0.0";
+            TimerText = "0";
             StatusText = "-";
-            SetText = "Sets: -/-";
+            UpdateWorkoutSetText();
+
+            SetScreenOn(false);
 
             SetState(State.StandBy);
             EnableEntries(true);
+        }
+
+        private void SetScreenOn(bool on)
+        {
+            if (DeviceInfo.DeviceType != DeviceType.Unknown)
+                DeviceDisplay.KeepScreenOn = on;
+        }
+
+        private void UpdateWorkoutSetText()
+        {
+            WorkoutsText = "Workouts\n" + _currentWorkout + "/" + _workouts;
+            SetText = "Sets\n" + _setsDone + "/" + Sets;
         }
 
         public bool CorrectEntryNumber(string text, out string error)
