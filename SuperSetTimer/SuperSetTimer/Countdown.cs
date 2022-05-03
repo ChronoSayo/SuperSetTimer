@@ -18,15 +18,15 @@ namespace SuperSetTimer
 
         private enum State
         {
-            StandBy, StartUp, Active, Cooldown, Paused
+            StandBy, Prepare, Active, Rest, Paused
         }
-
+        
         public Picker WorkoutsPicker { get; set; }
-        public Entry StartUpEntry { get; set; }
+        public Entry PrepareEntry { get; set; }
         public Entry ActiveEntry1 { get; set; }
         public Entry ActiveEntry2 { get; set; }
         public Entry ActiveEntry3 { get; set; }
-        public Entry CooldownEntry { get; set; }
+        public Entry RestEntry { get; set; }
         public Entry SetsEntry { get; set; }
         public Label TimerLabel { get; set; }
         public Label StatusLabel { get; set; }
@@ -38,11 +38,11 @@ namespace SuperSetTimer
         public Button ResetButton { get; set; }
         public IAudio Audio { get; set; }
 
-        private uint StartUpTime => uint.Parse(StartUpEntry.Text);
+        private uint StartUpTime => uint.Parse(PrepareEntry.Text);
         private uint ActiveTime1 => uint.Parse(ActiveEntry1.Text);
         private uint ActiveTime2 => uint.Parse(ActiveEntry2.Text);
         private uint ActiveTime3 => uint.Parse(ActiveEntry3.Text);
-        private uint CooldownTime => uint.Parse(CooldownEntry.Text);
+        private uint CooldownTime => uint.Parse(RestEntry.Text);
         private int Sets => int.Parse(SetsEntry.Text);
 
         private string TimerText
@@ -133,7 +133,7 @@ namespace SuperSetTimer
                         return;
                     }
 
-                    SetState(State.Cooldown);
+                    SetState(State.Rest);
                 }
 
                 _stopWatch.Restart();
@@ -152,14 +152,14 @@ namespace SuperSetTimer
                     _startUp = true;
                     _setsDone = 0;
                     ProgressBar.Progress = 0;
-                    SetState(State.StartUp);
+                    SetState(State.Prepare);
                     ResetButton.IsEnabled = false;
-                    DeviceDisplay.KeepScreenOn = true;
+                    SetScreenOn(true);
                     _currentWorkout = 0;
                     UpdateWorkoutSetText();
                     break;
-                case State.Cooldown:
-                case State.StartUp:
+                case State.Rest:
+                case State.Prepare:
                 case State.Active:
                     _stopWatch.Stop();
                     _timer.Stop();
@@ -172,7 +172,7 @@ namespace SuperSetTimer
                     _timer.Start();
                     ResetButton.IsEnabled = false;
                     SetState(_fromCountingState);
-                    DeviceDisplay.KeepScreenOn = false;
+                    SetScreenOn(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -210,10 +210,10 @@ namespace SuperSetTimer
         private void EnableEntries(bool enable)
         {
             WorkoutsPicker.IsEnabled = enable;
-            CooldownEntry.IsEnabled = enable;
+            RestEntry.IsEnabled = enable;
             ActiveEntriesEnable(enable);
             SetsEntry.IsEnabled = enable;
-            StartUpEntry.IsEnabled = enable;
+            PrepareEntry.IsEnabled = enable;
         }
 
         private void ActiveEntriesEnable(bool enable)
@@ -241,7 +241,7 @@ namespace SuperSetTimer
                     _fromCountingState = State.Active;
                     Audio.PlayDone();
                     break;
-                case State.StartUp:
+                case State.Prepare:
                     statusText = "Get ready!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.CadetBlue;
@@ -267,7 +267,7 @@ namespace SuperSetTimer
                     SetProgress(_currentActiveTime);
                     Audio.PlayActive();
                     break;
-                case State.Cooldown:
+                case State.Rest:
                     statusText = "Rest";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.Yellow;
@@ -312,10 +312,16 @@ namespace SuperSetTimer
             StatusText = "-";
             UpdateWorkoutSetText();
 
-            DeviceDisplay.KeepScreenOn = false;
+            SetScreenOn(false);
 
             SetState(State.StandBy);
             EnableEntries(true);
+        }
+
+        private void SetScreenOn(bool on)
+        {
+            if (DeviceInfo.DeviceType != DeviceType.Unknown)
+                DeviceDisplay.KeepScreenOn = on;
         }
 
         private void UpdateWorkoutSetText()

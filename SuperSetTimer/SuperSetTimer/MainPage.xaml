@@ -80,8 +80,8 @@
                 <Label Grid.Row="3" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sets:"/>
                 <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="SetsEntry" Text="3" Keyboard="Numeric"
                        Completed="EntryInputCheck"/>
-                <Label Grid.Row="4" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Start up:"/>
-                <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="StartUpEntry" Text="3" Keyboard="Numeric"
+                <Label Grid.Row="4" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Prepare:"/>
+                <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="PrepareEntry" Text="3" Keyboard="Numeric"
                        Completed="EntryInputCheck"/>
                 <Label Grid.Row="5" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sound:"/>
                 <RadioButton Grid.Row="5" Grid.Column="1" x:Name="EffectsRadioButton" Content="Effects" IsChecked="True"/>

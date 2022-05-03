@@ -19,11 +19,11 @@ namespace SuperSetTimer
             _countdown = new Countdown
             {
                 WorkoutsPicker = WorkoutsPicker,
-                StartUpEntry = StartUpEntry,
+                PrepareEntry = PrepareEntry,
                 ActiveEntry1 = ActiveEntry1,
                 ActiveEntry2 = ActiveEntry2,
                 ActiveEntry3 = ActiveEntry3,
-                CooldownEntry = RestEntry,
+                RestEntry = RestEntry,
                 SetsEntry = SetsEntry,
                 StatusLabel = StatusLabel,
                 TimerLabel = TimerLabel,
