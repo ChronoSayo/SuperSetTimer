@@ -112,30 +112,22 @@ namespace SuperSetTimer
                     _startUp = false;
 
                 if (!_isCooldown)
-                {
-                    _currentWorkout++;
-                    if (_currentWorkout > _workouts)
-                    {
-                        _currentWorkout = 0;
-                        _setsDone++;
-                    }
-                    UpdateWorkoutSetText();
-
                     SetState(State.Active);
-                }
                 else
                 {
-                    if (_setsDone >= Sets)
+                    if (_setsDone >= Sets && _currentActiveTime >= _workouts)
                     {
                         SetState(State.StandBy);
                         EnableEntries(true);
                         Reset();
+                        UpdateWorkoutSetText();
                         return;
                     }
 
                     SetState(State.Rest);
                 }
 
+                UpdateWorkoutSetText();
                 _stopWatch.Restart();
             });
         }
@@ -151,11 +143,11 @@ namespace SuperSetTimer
                     _isCooldown = true;
                     _startUp = true;
                     _setsDone = 0;
+                    _currentWorkout = 0;
                     ProgressBar.Progress = 0;
                     SetState(State.Prepare);
                     ResetButton.IsEnabled = false;
                     SetScreenOn(true);
-                    _currentWorkout = 0;
                     UpdateWorkoutSetText();
                     break;
                 case State.Rest:
@@ -252,6 +244,15 @@ namespace SuperSetTimer
                     statusText = "GO!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.Green;
+
+                    if (_setsDone == 0)
+                        _setsDone++;
+                    _currentWorkout++;
+                    if (_currentWorkout > _workouts)
+                    {
+                        _currentWorkout = 1;
+                        _setsDone++;
+                    }
                     switch (_currentWorkout)
                     {
                         case 1:
@@ -303,6 +304,8 @@ namespace SuperSetTimer
 
             _timer.Stop();
             _timer.Enabled = false;
+
+            ResetButton.IsEnabled = false;
 
             _startUp = true;
             _setsDone = 0;
