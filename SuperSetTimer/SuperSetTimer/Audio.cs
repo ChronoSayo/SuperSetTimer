@@ -31,7 +31,7 @@ namespace SuperSetTimer
             _player.Load(Effects ? "done.wav" : "game.wav");
             _player.Play();
         }
-        public void PlayStartUp()
+        public void PlayPrepare()
         {
             if (Mute)
                 return;
@@ -62,7 +62,7 @@ namespace SuperSetTimer
 
         public void PlayCountdown(int countdown)
         {
-            if(_player.IsPlaying)
+            if(Mute || _player.IsPlaying)
                 return;
 
             int i = countdown - 1;

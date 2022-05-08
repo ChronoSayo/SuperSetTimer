@@ -7,16 +7,16 @@
         <Frame BackgroundColor="AliceBlue" Padding="24" CornerRadius="0" x:Name="StatusFrame">
             <Label HorizontalOptions="Center" x:Name="StatusLabel" Text="-" FontSize="40"/>
         </Frame>
-        <Grid>
+        <Grid HeightRequest="100">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Frame BackgroundColor="GreenYellow" Padding="24" CornerRadius="0" x:Name="WorkoutFrame" >
-                <Label x:Name="WorkoutLabel" Text="Workouts&#x0a;0/1" HorizontalTextAlignment="Center" TextColor="Black" FontSize="30" />
+            <Frame BackgroundColor="GreenYellow" Padding="24" CornerRadius="20" x:Name="WorkoutFrame" >
+                <Label x:Name="WorkoutLabel" Text="Workouts&#x0a;0/1" HorizontalTextAlignment="Center" TextColor="Black" FontSize="23" />
             </Frame>
-            <Frame Grid.Column="1" BackgroundColor="DarkGoldenrod" Padding="24" CornerRadius="0" x:Name="SetFrame" >
-                <Label x:Name="SetLabel" Text="Sets&#x0a;0/0" HorizontalTextAlignment="Center" TextColor="Black" FontSize="30" />
+            <Frame Grid.Column="1" BackgroundColor="DarkGoldenrod" Padding="24" CornerRadius="20" x:Name="SetFrame" >
+                <Label x:Name="SetLabel" Text="Sets&#x0a;0/0" HorizontalTextAlignment="Center" TextColor="Black" FontSize="23" />
             </Frame>
         </Grid>
         <StackLayout>
