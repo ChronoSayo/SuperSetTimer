@@ -115,7 +115,7 @@ namespace SuperSetTimer
                     SetState(State.Active);
                 else
                 {
-                    if (_setsDone >= Sets && _currentActiveTime >= _workouts)
+                    if (_setsDone == Sets && _currentWorkout == _workouts)
                     {
                         SetState(State.StandBy);
                         EnableEntries(true);
@@ -238,13 +238,12 @@ namespace SuperSetTimer
                     ActionButtonText = "PAUSE";
                     bgColor = Color.CadetBlue;
                     SetProgress(StartUpTime);
-                    Audio.PlayStartUp();
+                    Audio.PlayPrepare();
                     break;
                 case State.Active:
                     statusText = "GO!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.Green;
-
                     if (_setsDone == 0)
                         _setsDone++;
                     _currentWorkout++;

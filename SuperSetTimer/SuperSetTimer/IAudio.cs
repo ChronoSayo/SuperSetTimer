@@ -8,7 +8,7 @@ namespace SuperSetTimer
         RadioButton EffectRadioButton { get; set; }
 
         void PlayDone();
-        void PlayStartUp();
+        void PlayPrepare();
         void PlayActive();
         void PlayCooldown();
         void PlayPause();

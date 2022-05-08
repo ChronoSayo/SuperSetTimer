@@ -15,7 +15,7 @@ namespace SuperSetTimer.Tests
         public void PlayDone()
         {
         }
-        public void PlayStartUp()
+        public void PlayPrepare()
         {
         }
         public void PlayActive()
