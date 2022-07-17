@@ -7,6 +7,7 @@ using Xamarin.Forms;
 namespace SuperSetTimer
 {
     public class Countdown
+
     {
         private readonly Timer _timer;
         private readonly Stopwatch _stopWatch;
@@ -18,9 +19,11 @@ namespace SuperSetTimer
 
         private enum State
         {
-            StandBy, Prepare, Active, Rest, Paused
+            StandBy, Prepare, PrepareNext, Active, Rest, Paused
         }
         
+        public CheckBox RestOption { get; set; }
+        public Entry PrepareNextEntry { get; set; }
         public Picker WorkoutsPicker { get; set; }
         public Entry PrepareEntry { get; set; }
         public Entry ActiveEntry1 { get; set; }
@@ -39,6 +42,7 @@ namespace SuperSetTimer
         public IAudio Audio { get; set; }
 
         private uint StartUpTime => uint.Parse(PrepareEntry.Text);
+        private uint PrepareNextTime => uint.Parse(PrepareNextEntry.Text);
         private uint ActiveTime1 => uint.Parse(ActiveEntry1.Text);
         private uint ActiveTime2 => uint.Parse(ActiveEntry2.Text);
         private uint ActiveTime3 => uint.Parse(ActiveEntry3.Text);
@@ -87,13 +91,23 @@ namespace SuperSetTimer
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                bool noRest = !RestOption.IsChecked && _currentWorkout < _workouts;
                 uint setTimer;
                 if (_startUp)
                     setTimer = StartUpTime;
                 else
-                    setTimer = _isCooldown ? CooldownTime : _currentActiveTime;
+                {
+                    if (_isCooldown)
+                    {
+                        setTimer = CooldownTime;
+                        if (noRest)
+                            setTimer = PrepareNextTime;
+                    }
+                    else
+                        setTimer = _currentActiveTime;
+                }
+
                 TimeSpan remainingTimer = TimeSpan.FromSeconds(setTimer) - _stopWatch.Elapsed;
-                
                 TimerText = remainingTimer.ToString(@"m\:ss\.ff");
 
                 ProgressBar.Progress += _progressSpeed;
@@ -124,7 +138,10 @@ namespace SuperSetTimer
                         return;
                     }
 
-                    SetState(State.Rest);
+                    if(RestOption.IsChecked)
+                        SetState(State.Rest);
+                    else
+                        SetState(noRest ? State.PrepareNext : State.Rest);
                 }
 
                 UpdateWorkoutSetText();
@@ -152,6 +169,7 @@ namespace SuperSetTimer
                     break;
                 case State.Rest:
                 case State.Prepare:
+                case State.PrepareNext:
                 case State.Active:
                     _stopWatch.Stop();
                     _timer.Stop();
@@ -199,13 +217,20 @@ namespace SuperSetTimer
             UpdateWorkoutSetText();
         }
 
+        public void EnablePrepareNextTime(bool enable)
+        {
+            PrepareNextEntry.IsEnabled = enable;
+        }
+
         private void EnableEntries(bool enable)
         {
             WorkoutsPicker.IsEnabled = enable;
+            RestOption.IsEnabled = enable;
             RestEntry.IsEnabled = enable;
-            ActiveEntriesEnable(enable);
             SetsEntry.IsEnabled = enable;
             PrepareEntry.IsEnabled = enable;
+            ActiveEntriesEnable(enable);
+            EnablePrepareNextTime(enable);
         }
 
         private void ActiveEntriesEnable(bool enable)
@@ -233,11 +258,12 @@ namespace SuperSetTimer
                     _fromCountingState = State.Active;
                     Audio.PlayDone();
                     break;
+                case State.PrepareNext:
                 case State.Prepare:
                     statusText = "Get ready!";
                     ActionButtonText = "PAUSE";
                     bgColor = Color.CadetBlue;
-                    SetProgress(StartUpTime);
+                    SetProgress(state == State.Prepare ? StartUpTime : PrepareNextTime);
                     Audio.PlayPrepare();
                     break;
                 case State.Active:
@@ -335,7 +361,7 @@ namespace SuperSetTimer
         public bool CorrectEntryNumber(string text, out string error)
         {
             error = "1";
-            return uint.TryParse(text, out uint i);
+            return uint.TryParse(text, out _);
         }
     }
 }

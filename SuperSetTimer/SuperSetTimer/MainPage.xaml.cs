@@ -18,6 +18,8 @@ namespace SuperSetTimer
             };
             _countdown = new Countdown
             {
+                RestOption = RestOptions,
+                PrepareNextEntry = PrepareNextEntry,
                 WorkoutsPicker = WorkoutsPicker,
                 PrepareEntry = PrepareEntry,
                 ActiveEntry1 = ActiveEntry1,
@@ -51,16 +53,21 @@ namespace SuperSetTimer
 
         private void EntryInputCheck(object sender, EventArgs e)
         {
-            if (_countdown.CorrectEntryNumber(((Entry) sender).Text, out string error)) 
+            if (_countdown.CorrectEntryNumber(((Entry)sender).Text, out string error))
                 return;
 
             DisplayAlert("Wrong input", "Input can only be a number", "OK");
-            ((Entry) sender).Text = error;
+            ((Entry)sender).Text = error;
         }
 
         private void OnWorkoutsChanged(object sender, EventArgs e)
         {
             _countdown.AmountOfWorkouts(int.Parse(((Picker)sender).SelectedItem.ToString()));
+        }
+
+        private void OnRestOptionsChanged(object sender, CheckedChangedEventArgs e)
+        {
+            _countdown.EnablePrepareNextTime(!RestOptions.IsChecked);
         }
     }
 }
