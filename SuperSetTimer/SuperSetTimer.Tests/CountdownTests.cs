@@ -19,15 +19,17 @@ namespace SuperSetTimer.Tests
             _countdown = new Countdown
             {
                 WorkoutsPicker = new Picker(),
-                PrepareEntry = new Entry { Text = "1" },
-                ActiveEntry1 = new Entry { Text = "1" },
-                ActiveEntry2 = new Entry { Text = "1" },
-                ActiveEntry3 = new Entry { Text = "1" },
-                RestEntry = new Entry { Text = "1" },
-                SetsEntry = new Entry { Text = "2" },
-                StatusLabel = new Label { Text = "Status" },
-                TimerLabel = new Label { Text = "1" },
-                SetLabel = new Label { Text = "1" },
+                RestOption = new CheckBox {IsChecked = true},
+                PrepareEntry = new Entry {Text = "1"},
+                PrepareNextEntry = new Entry {Text = "1"},
+                ActiveEntry1 = new Entry {Text = "1"},
+                ActiveEntry2 = new Entry {Text = "1"},
+                ActiveEntry3 = new Entry {Text = "1"},
+                RestEntry = new Entry {Text = "1"},
+                SetsEntry = new Entry {Text = "2"},
+                StatusLabel = new Label {Text = "Status"},
+                TimerLabel = new Label {Text = "1"},
+                SetLabel = new Label {Text = "1"},
                 WorkoutsLabel = new Label {Text = "3"},
                 StatusFrame = new Frame(),
                 ProgressBar = new ProgressBar(),
@@ -43,6 +45,23 @@ namespace SuperSetTimer.Tests
         {
             _countdown.Action();
             
+            Assert.Equal("Get ready!", _countdown.StatusLabel.Text);
+        }
+
+        [Fact]
+        public void Countdown_PrepareNext_Test()
+        {
+            _countdown.AmountOfWorkouts(2);
+            _countdown.RestOption.IsChecked = false;
+            _countdown.Action();
+
+            bool passedActive = false;
+            while (_countdown.StatusLabel.Text != "Get ready!" || !passedActive)
+            {
+                if(_countdown.StatusLabel.Text == "GO!")
+                    passedActive = true;
+            }
+
             Assert.Equal("Get ready!", _countdown.StatusLabel.Text);
         }
 

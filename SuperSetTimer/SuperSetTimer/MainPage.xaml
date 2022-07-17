@@ -4,7 +4,7 @@
              x:Class="SuperSetTimer.MainPage">
 
     <StackLayout BackgroundColor="Gray">
-        <Frame BackgroundColor="AliceBlue" Padding="24" CornerRadius="0" x:Name="StatusFrame">
+        <Frame BackgroundColor="AliceBlue" Padding="15" CornerRadius="0" x:Name="StatusFrame">
             <Label HorizontalOptions="Center" x:Name="StatusLabel" Text="-" FontSize="40"/>
         </Frame>
         <Grid HeightRequest="100">
@@ -12,11 +12,11 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Frame BackgroundColor="GreenYellow" Padding="24" CornerRadius="20" x:Name="WorkoutFrame" >
-                <Label x:Name="WorkoutLabel" Text="Workouts&#x0a;0/1" HorizontalTextAlignment="Center" TextColor="Black" FontSize="23" />
+            <Frame BackgroundColor="GreenYellow" Padding="15" CornerRadius="20" x:Name="WorkoutFrame" >
+                <Label x:Name="WorkoutLabel" Text="Workouts&#x0a;0/1" HorizontalTextAlignment="Center" TextColor="Black" FontSize="20" />
             </Frame>
-            <Frame Grid.Column="1" BackgroundColor="DarkGoldenrod" Padding="24" CornerRadius="20" x:Name="SetFrame" >
-                <Label x:Name="SetLabel" Text="Sets&#x0a;0/0" HorizontalTextAlignment="Center" TextColor="Black" FontSize="23" />
+            <Frame Grid.Column="1" BackgroundColor="DarkGoldenrod" Padding="15" CornerRadius="20" x:Name="SetFrame" >
+                <Label x:Name="SetLabel" Text="Sets&#x0a;0/0" HorizontalTextAlignment="Center" TextColor="Black" FontSize="20" />
             </Frame>
         </Grid>
         <StackLayout>
@@ -30,6 +30,7 @@
                     Clicked="OnTimerReset" HeightRequest="60" Margin ="0, -10, 0, -10"/>
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
@@ -52,7 +53,23 @@
                         <x:String>3</x:String>
                     </Picker.Items>
                 </Picker>
-                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" >
+                <Grid Grid.Row="1" Grid.ColumnSpan="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Rest between workouts:"/>
+                    <CheckBox Grid.Column="1" x:Name="RestOptions" IsChecked="False" CheckedChanged="OnRestOptionsChanged" />
+                    <Label Grid.Column="2" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Time until next set:"/>
+                    <Entry Grid.Column="3" HorizontalTextAlignment="Start" x:Name="PrepareNextEntry" Text="30" Keyboard="Numeric"
+                           Completed="EntryInputCheck"/>
+                </Grid>
+                <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
@@ -65,28 +82,28 @@
                         <ColumnDefinition Width="50"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Workout time 1:"/>
-                    <Entry Grid.Column="1" HorizontalTextAlignment="Start" x:Name="ActiveEntry1" Text="5" Keyboard="Numeric"
+                    <Entry Grid.Column="1" HorizontalTextAlignment="Start" x:Name="ActiveEntry1" Text="30" Keyboard="Numeric"
                            Completed="EntryInputCheck"/>
                     <Label Grid.Column="2" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="WT 2:"/>
-                    <Entry Grid.Column="3" HorizontalTextAlignment="Start" x:Name="ActiveEntry2" Text="5" Keyboard="Numeric"
+                    <Entry Grid.Column="3" HorizontalTextAlignment="Start" x:Name="ActiveEntry2" Text="30" Keyboard="Numeric"
                            Completed="EntryInputCheck" IsEnabled="False"/>
                     <Label Grid.Column="4" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="WT 3:"/>
-                    <Entry Grid.Column="5" HorizontalTextAlignment="Start" x:Name="ActiveEntry3" Text="5" Keyboard="Numeric"
+                    <Entry Grid.Column="5" HorizontalTextAlignment="Start" x:Name="ActiveEntry3" Text="30" Keyboard="Numeric"
                            Completed="EntryInputCheck" IsEnabled="False"/>
                 </Grid>
-                <Label Grid.Row="2" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Rest:"/>
-                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="RestEntry" Text="2" Keyboard="Numeric"
+                <Label Grid.Row="3" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Rest:"/>
+                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="RestEntry" Text="20" Keyboard="Numeric"
                        Completed="EntryInputCheck"/>
-                <Label Grid.Row="3" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sets:"/>
-                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="SetsEntry" Text="3" Keyboard="Numeric"
+                <Label Grid.Row="4" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sets:"/>
+                <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="SetsEntry" Text="3" Keyboard="Numeric"
                        Completed="EntryInputCheck"/>
-                <Label Grid.Row="4" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Prepare:"/>
-                <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="PrepareEntry" Text="3" Keyboard="Numeric"
+                <Label Grid.Row="5" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Prepare:"/>
+                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" x:Name="PrepareEntry" Text="10" Keyboard="Numeric"
                        Completed="EntryInputCheck"/>
-                <Label Grid.Row="5" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sound:"/>
-                <RadioButton Grid.Row="5" Grid.Column="1" x:Name="EffectsRadioButton" Content="Effects" IsChecked="True"/>
-                <RadioButton Grid.Row="5" Grid.Column="2" x:Name="VoiceRadioButton" Content="Voice"/>
-                <RadioButton Grid.Row="5" Grid.Column="3" x:Name="MuteRadioButton" Content="Off"/>
+                <Label Grid.Row="6" Grid.Column="0" HorizontalTextAlignment="Start" VerticalOptions="Center" Text="Sound:"/>
+                <RadioButton Grid.Row="6" Grid.Column="1" x:Name="EffectsRadioButton" Content="Effects" IsChecked="True"/>
+                <RadioButton Grid.Row="6" Grid.Column="2" x:Name="VoiceRadioButton" Content="Voice"/>
+                <RadioButton Grid.Row="6" Grid.Column="3" x:Name="MuteRadioButton" Content="Off"/>
             </Grid>
         </StackLayout>
     </StackLayout>
