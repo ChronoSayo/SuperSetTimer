@@ -164,7 +164,7 @@ namespace SuperSetTimer
                     ProgressBar.Progress = 0;
                     SetState(State.Prepare);
                     ResetButton.IsEnabled = false;
-                    SetScreenOn(true);
+                    KeepScreenOn(true);
                     UpdateWorkoutSetText();
                     break;
                 case State.Rest:
@@ -176,13 +176,14 @@ namespace SuperSetTimer
                     _fromCountingState = _state;
                     SetState(State.Paused);
                     ResetButton.IsEnabled = true;
+                    KeepScreenOn(false);
                     break;
                 case State.Paused:
                     _stopWatch.Start();
                     _timer.Start();
                     ResetButton.IsEnabled = false;
                     SetState(_fromCountingState);
-                    SetScreenOn(false);
+                    KeepScreenOn(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -340,13 +341,13 @@ namespace SuperSetTimer
             StatusText = "-";
             UpdateWorkoutSetText();
 
-            SetScreenOn(false);
+            KeepScreenOn(false);
 
             SetState(State.StandBy);
             EnableEntries(true);
         }
 
-        private void SetScreenOn(bool on)
+        private void KeepScreenOn(bool on)
         {
             if (DeviceInfo.DeviceType != DeviceType.Unknown)
                 DeviceDisplay.KeepScreenOn = on;
